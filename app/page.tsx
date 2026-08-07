@@ -118,7 +118,7 @@ export default function Home() {
           </div>
           <div className="metric-grid">
             <article><span>Обработано запросов</span><strong>2 000 000</strong><small>100% входного файла</small></article>
-            <article><span>Подозрительный трафик</span><strong>14,8%</strong><small className="danger">↑ требует проверки</small></article>
+            <article><span>Решение BLOCK</span><strong>14,8%</strong><small className="danger">↑ требует проверки</small></article>
             <article><span>Возможные потери</span><strong>126 400 ₽</strong><small>оценка по win price</small></article>
             <article><span>Рискованные placement</span><strong>31</strong><small>из 284 источников</small></article>
           </div>
