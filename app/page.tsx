@@ -46,7 +46,7 @@ export default function Home() {
           <a href="#process">Процесс</a>
           <a href="#offer">Оффер</a>
         </div>
-        <a className="nav-cta" href="https://www.fl.ru/users/ifreebadmani/" target="_blank" rel="noreferrer">
+        <a className="nav-cta" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">
           Обсудить аудит <span aria-hidden="true">↗</span>
         </a>
       </nav>
@@ -60,7 +60,7 @@ export default function Home() {
             где бюджет уходит в некачественный трафик — с понятными причинами для каждого решения.
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href="https://www.fl.ru/users/ifreebadmani/" target="_blank" rel="noreferrer">
+            <a className="button button-primary" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">
               Запросить аудит <span aria-hidden="true">→</span>
             </a>
             <a className="button button-ghost" href="#demo">Посмотреть демо</a>
@@ -197,7 +197,7 @@ export default function Home() {
             <span>СТАРТОВАЯ СТОИМОСТЬ</span>
             <strong>от 30 000 ₽</strong>
             <p>Точная цена — после проверки формата, периода и объёма данных.</p>
-            <a className="button button-dark" href="https://www.fl.ru/users/ifreebadmani/" target="_blank" rel="noreferrer">
+            <a className="button button-dark" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">
               Обсудить задачу <span aria-hidden="true">↗</span>
             </a>
             <small>Без бесплатного анализа полного массива</small>
@@ -217,7 +217,7 @@ export default function Home() {
       <footer>
         <div className="shell footer-inner">
           <div><a className="brand footer-brand" href="#top"><span className="brand-mark"><i /><i /><i /></span><span>IVT GUARD</span></a><p>Defensive OpenRTB quality control.</p></div>
-          <div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.fl.ru/users/ifreebadmani/" target="_blank" rel="noreferrer">FL.ru ↗</a></div>
+          <div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Freelance.ru ↗</a></div>
           <span className="footer-note">Internal codename: 3ve.4 Defense Lab</span>
         </div>
       </footer>

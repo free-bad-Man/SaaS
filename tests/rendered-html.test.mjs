@@ -41,7 +41,8 @@ test("server-renders the IVT Guard commercial landing", async () => {
   assert.match(html, /Аудит одной кампании/);
   assert.match(html, /от 30 000 ₽/);
   assert.match(html, /синтетическ/i);
-  assert.match(html, /https:\/\/www\.fl\.ru\/users\/ifreebadmani\//);
+  assert.match(html, /https:\/\/freelance\.ru\/darkPulsar/);
+  assert.doesNotMatch(html, /https:\/\/www\.fl\.ru\//);
   assert.match(html, /https:\/\/github\.com\/free-bad-Man\/SaaS/);
   assert.match(html, /https:\/\/ivt-guard\.example\/og\.png/);
   assert.doesNotMatch(html, /Your site is taking shape|react-loading-skeleton|codex-preview/i);
