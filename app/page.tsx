@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PlatformConsole from "./platform/PlatformConsole";
+import SampleAuditLead from "./SampleAuditLead";
 
 const findings = [
   ["premium-publisher.example", "Domain mismatch", "BLOCK", "92"],
@@ -43,7 +44,7 @@ export default function Home() {
             <a href="#modules">Modules</a>
             <a href="#offer">Pilot</a>
           </div>
-          <a className="nav-cta" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request a pilot <span aria-hidden="true">↗</span></a>
+          <a className="nav-cta" href="#sample-audit">Free sample audit <span aria-hidden="true">↓</span></a>
         </nav>
       </header>
 
@@ -54,8 +55,8 @@ export default function Home() {
           <h1>See why traffic was rejected.<br />And what it cost you.</h1>
           <p className="lead">3VE.4 combines explainable traffic-quality evidence with CPA and ROAS, turning advertising logs into reproducible watch, pause, and scale decisions.</p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/platform">Open platform console <span aria-hidden="true">→</span></Link>
-            <a className="button button-secondary" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request a pilot ↗</a>
+            <a className="button button-primary" href="#sample-audit">Run free sample audit <span aria-hidden="true">→</span></a>
+            <Link className="button button-secondary" href="/platform">Open platform console ↗</Link>
           </div>
           <div className="hero-notes" aria-label="Platform benefits"><span><i /> OpenRTB + postbacks</span><span><i /> Explainable decisions</span><span><i /> Cloud workspace</span></div>
         </div>
@@ -90,6 +91,8 @@ export default function Home() {
       </section>
 
       <section className="principles" aria-label="Platform principles"><div className="shell principles-inner"><p>One event stream.<br /><strong>Every decision connected.</strong></p><div><span>Traffic ingestion</span><span>Postback attribution</span><span>IVT quality scoring</span><span>DSP buying actions</span></div></div></section>
+
+      <SampleAuditLead />
 
       <section className="dashboard-proof shell" aria-labelledby="dashboard-proof-title">
         <div className="dashboard-proof-heading">

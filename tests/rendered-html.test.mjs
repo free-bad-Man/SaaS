@@ -21,6 +21,10 @@ test("server-renders the complete 3VE.4 platform landing", async () => {
   assert.match(html, /<html lang="en">/);
   assert.match(html, /<title>3VE\.4 — unified programmatic operations platform<\/title>/);
   assert.match(html, /See why traffic was rejected/);
+  assert.match(html, /Run free sample audit/);
+  assert.match(html, /Upload a small sample/);
+  assert.match(html, /Work email/);
+  assert.match(html, /no raw-file storage/);
   assert.match(html, /Traffic Ingestion/);
   assert.match(html, /Postback Hub/);
   assert.match(html, /IVT Guard/);

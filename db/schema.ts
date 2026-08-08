@@ -46,6 +46,23 @@ export const API_RATE_LIMITS_TABLE_SQL = `
   )
 `;
 
+export const SAMPLE_AUDIT_LEADS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS sample_audit_leads (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    company TEXT NOT NULL DEFAULT '',
+    source_name TEXT NOT NULL,
+    source_fingerprint TEXT NOT NULL,
+    record_count INTEGER NOT NULL,
+    allow_count INTEGER NOT NULL,
+    watch_count INTEGER NOT NULL,
+    block_count INTEGER NOT NULL,
+    average_score INTEGER NOT NULL,
+    top_findings_json TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )
+`;
+
 export const PIPELINE_RUNS_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS pipeline_runs (
     id TEXT PRIMARY KEY,
@@ -111,6 +128,7 @@ export const HISTORY_SCHEMA_STATEMENTS = [
   ACCOUNTS_TABLE_SQL,
   USAGE_PERIODS_TABLE_SQL,
   API_RATE_LIMITS_TABLE_SQL,
+  SAMPLE_AUDIT_LEADS_TABLE_SQL,
   PIPELINE_RUNS_TABLE_SQL,
   PIPELINE_RUNS_PROJECT_INDEX_SQL,
   UPLOAD_JOBS_TABLE_SQL,

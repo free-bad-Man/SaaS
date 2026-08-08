@@ -2,6 +2,7 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { handlePlatformApi } from "../platform/api.mjs";
+import { handleLeadApi } from "../platform/lead-api.mjs";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
@@ -30,6 +31,9 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    const leadResponse = await handleLeadApi(request, env.DB);
+    if (leadResponse) return leadResponse;
 
     const platformResponse = await handlePlatformApi(request, env.DB, env.FILES);
     if (platformResponse) return platformResponse;
