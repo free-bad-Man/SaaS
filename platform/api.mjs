@@ -1,0 +1,158 @@
+import { CONNECTORS } from "./connectors.mjs";
+import { parsePlatformInput } from "./input.mjs";
+import { runPlatformPipeline } from "./pipeline.mjs";
+import { createProject, getPipelineRun, listPipelineRuns, listProjects, savePipelineRun } from "./history.ts";
+import { getProjectPolicy, saveProjectPolicy } from "./policies.ts";
+import { createUploadJob, getUploadJob, readUploadSource, updateUploadJob } from "./uploads.ts";
+
+const MAX_BODY_BYTES = 2 * 1024 * 1024;
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+
+function json(payload, status = 200) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-3ve4-api": "v1" },
+  });
+}
+
+async function readJson(request) {
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.toLowerCase().includes("application/json")) throw new Error("Content-Type must be application/json.");
+  const declaredLength = Number(request.headers.get("content-length") ?? 0);
+  if (declaredLength > MAX_BODY_BYTES) throw new Error("Request body exceeds 2 MB.");
+  const source = await request.text();
+  if (new TextEncoder().encode(source).byteLength > MAX_BODY_BYTES) throw new Error("Request body exceeds 2 MB.");
+  if (!source.trim()) throw new Error("Request body is empty.");
+  return JSON.parse(source);
+}
+
+function uploadErrors(result) {
+  const rejectedEvents = result?.diagnostics?.rejectedEvents ?? [];
+  const rejectedPostbacks = result?.diagnostics?.rejectedPostbacks ?? [];
+  const duplicateEvents = result?.diagnostics?.duplicateEvents ?? [];
+  const duplicatePostbacks = result?.diagnostics?.duplicatePostbacks ?? [];
+  return [
+    ...rejectedEvents.map((item) => ({ kind: "event", row: Number(item.index) + 1, message: item.error })),
+    ...rejectedPostbacks.map((item) => ({ kind: "postback", row: Number(item.index) + 1, message: item.error })),
+    ...duplicateEvents.map((id) => ({ kind: "duplicate event", row: null, message: `Duplicate event ${id} was skipped.` })),
+    ...duplicatePostbacks.map((id) => ({ kind: "duplicate postback", row: null, message: `Duplicate postback ${id} was skipped.` })),
+  ];
+}
+
+export async function handlePlatformApi(request, database, storage) {
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith("/api/platform")) return null;
+
+  try {
+    if (url.pathname === "/api/platform/health" && request.method === "GET") {
+      return json({ status: "operational", version: "3ve4.pipeline.v1", modules: ["ingestion", "postbacks", "attribution", "ivt", "optimizer", "connectors"] });
+    }
+    if (url.pathname === "/api/platform/connectors" && request.method === "GET") return json({ connectors: CONNECTORS });
+    if (url.pathname === "/api/platform/projects" && request.method === "GET") return json({ projects: await listProjects(database) });
+    if (url.pathname === "/api/platform/projects" && request.method === "POST") {
+      const input = await readJson(request);
+      return json({ project: await createProject(database, String(input?.name ?? "")) }, 201);
+    }
+    if (url.pathname === "/api/platform/policy" && request.method === "GET") {
+      return json({ policy: await getProjectPolicy(database, url.searchParams.get("projectId") ?? "") });
+    }
+    if (url.pathname === "/api/platform/policy" && request.method === "PUT") {
+      const input = await readJson(request);
+      const projectId = String(input?.projectId ?? "");
+      if (!(await listProjects(database)).some((project) => project.id === projectId)) throw new Error("Project not found.");
+      return json({ policy: await saveProjectPolicy(database, projectId, input?.policy ?? {}) });
+    }
+    if (url.pathname === "/api/platform/runs" && request.method === "GET") {
+      return json({ runs: await listPipelineRuns(database, url.searchParams.get("projectId") ?? "") });
+    }
+    if (url.pathname === "/api/platform/uploads" && request.method === "POST") {
+      const projectId = request.headers.get("x-project-id") ?? "";
+      const projects = await listProjects(database);
+      if (!projects.some((project) => project.id === projectId)) throw new Error("Project not found.");
+      const declaredLength = Number(request.headers.get("content-length") ?? 0);
+      if (declaredLength > MAX_UPLOAD_BYTES) throw new Error("Upload exceeds 25 MB.");
+      const source = await request.text();
+      const sizeBytes = new TextEncoder().encode(source).byteLength;
+      if (sizeBytes > MAX_UPLOAD_BYTES) throw new Error("Upload exceeds 25 MB.");
+      if (!source.trim()) throw new Error("The uploaded file is empty.");
+      const encodedName = request.headers.get("x-file-name") ?? "traffic-data.txt";
+      let fileName = encodedName;
+      try { fileName = decodeURIComponent(encodedName); } catch { fileName = "traffic-data.txt"; }
+      const job = await createUploadJob(database, storage, {
+        projectId,
+        fileName,
+        contentType: request.headers.get("content-type") ?? "text/plain",
+        connector: request.headers.get("x-connector") ?? "openrtb",
+        source,
+        sizeBytes,
+      });
+      return json({ job }, 202);
+    }
+    const uploadMatch = url.pathname.match(/^\/api\/platform\/uploads\/([^/]+)$/);
+    if (uploadMatch && request.method === "GET") {
+      const job = await getUploadJob(database, decodeURIComponent(uploadMatch[1]));
+      return job ? json({ job }) : json({ error: "Upload job not found." }, 404);
+    }
+    const processMatch = url.pathname.match(/^\/api\/platform\/uploads\/([^/]+)\/process$/);
+    if (processMatch && request.method === "POST") {
+      const id = decodeURIComponent(processMatch[1]);
+      const current = await getUploadJob(database, id);
+      if (!current) return json({ error: "Upload job not found." }, 404);
+      if (current.status === "complete" && current.runId) {
+        return json({ job: current, run: await getPipelineRun(database, current.runId) });
+      }
+      await updateUploadJob(database, id, { status: "processing" });
+      try {
+        const source = await readUploadSource(storage, current);
+        const payload = parsePlatformInput(source, current.fileName);
+        const policy = await getProjectPolicy(database, current.projectId);
+        const result = runPlatformPipeline({ ...payload, connector: current.connector, policy });
+        const run = await savePipelineRun(database, {
+          projectId: current.projectId,
+          sourceName: current.fileName,
+          connector: current.connector,
+          eventCount: payload.events.length,
+          postbackCount: payload.postbacks.length,
+          result,
+        });
+        const errors = uploadErrors(result);
+        const job = await updateUploadJob(database, id, {
+          status: "complete",
+          processedRows: payload.events.length + payload.postbacks.length,
+          totalRows: payload.events.length + payload.postbacks.length,
+          errorCount: errors.length,
+          errors,
+          runId: run.id,
+        });
+        return json({ job, run });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Upload processing failed.";
+        const job = await updateUploadJob(database, id, { status: "failed", errorCount: 1, errors: [{ kind: "file", row: null, message }] });
+        return json({ error: message, job }, 400);
+      }
+    }
+    const runMatch = url.pathname.match(/^\/api\/platform\/runs\/([^/]+)$/);
+    if (runMatch && request.method === "GET") {
+      const run = await getPipelineRun(database, decodeURIComponent(runMatch[1]));
+      return run ? json({ run }) : json({ error: "Run not found." }, 404);
+    }
+    if (url.pathname === "/api/platform/run" && request.method === "POST") {
+      const input = await readJson(request);
+      const policy = input?.projectId ? await getProjectPolicy(database, String(input.projectId)) : input?.policy;
+      const result = runPlatformPipeline({ ...input, policy });
+      if (!input?.projectId) return json(result);
+      const run = await savePipelineRun(database, {
+        projectId: String(input.projectId),
+        sourceName: String(input.sourceName ?? "API payload"),
+        connector: String(input.connector ?? "openrtb"),
+        eventCount: Array.isArray(input.events) ? input.events.length : 0,
+        postbackCount: Array.isArray(input.postbacks) ? input.postbacks.length : 0,
+        result,
+      });
+      return json({ ...result, runId: run.id });
+    }
+    return json({ error: "Route not found or method not allowed." }, 405);
+  } catch (error) {
+    return json({ error: error instanceof Error ? error.message : "Platform API error." }, 400);
+  }
+}

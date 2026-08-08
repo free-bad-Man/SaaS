@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
+import "./cursor-theme.css";
+import "./platform/platform.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "cyrillic"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "cyrillic"] });
-
-const title = "IVT Guard — аудит качества рекламного трафика";
-const description = "Объяснимый анализ OpenRTB и рекламных логов: подозрительные площадки, возможные потери бюджета и правила для shadow-mode.";
+const title = "3VE.4 — unified programmatic operations platform";
+const description = "Traffic ingestion, postbacks, IVT control, attribution, CPA/ROAS analytics, spend optimization, and DSP connectors in one explainable AdTech platform.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -22,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       type: "website",
-      locale: "ru_RU",
-      images: [{ url: imageUrl, width: 1536, height: 1024, alt: "IVT Guard — платите за рекламу, не за ботов" }],
+      locale: "en_US",
+      images: [{ url: imageUrl, width: 1536, height: 1024, alt: "3VE.4 — one control plane for programmatic operations" }],
     },
     twitter: {
       card: "summary_large_image",
@@ -36,8 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }
