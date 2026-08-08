@@ -1,4 +1,3 @@
-import { HISTORY_SCHEMA_STATEMENTS } from "../db/schema";
 import type { HistoryDatabase } from "./history";
 import { DEFAULT_POLICY, normalizePolicy } from "./policy.mjs";
 
@@ -22,15 +21,9 @@ function memoryStore() {
   return root[MEMORY_KEY];
 }
 
-async function ensureSchema(database?: HistoryDatabase) {
-  if (!database) return;
-  await database.batch(HISTORY_SCHEMA_STATEMENTS.map((sql) => database.prepare(sql)));
-}
-
 export async function getProjectPolicy(database: HistoryDatabase | undefined, projectId: string): Promise<DecisionPolicy> {
   if (!projectId) throw new Error("projectId is required.");
   if (!database) return memoryStore().get(projectId) ?? DEFAULT_POLICY as DecisionPolicy;
-  await ensureSchema(database);
   const row = await database.prepare("SELECT configuration_json FROM project_policies WHERE project_id = ?").bind(projectId).first<{ configuration_json: string }>();
   if (!row) return DEFAULT_POLICY as DecisionPolicy;
   try { return normalizePolicy(JSON.parse(row.configuration_json) as Partial<DecisionPolicy>) as DecisionPolicy; }
@@ -43,7 +36,6 @@ export async function saveProjectPolicy(database: HistoryDatabase | undefined, p
     memoryStore().set(projectId, policy);
     return policy;
   }
-  await ensureSchema(database);
   const project = await database.prepare("SELECT id FROM projects WHERE id = ?").bind(projectId).first<{ id: string }>();
   if (!project) throw new Error("Project not found.");
   await database.prepare(

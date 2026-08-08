@@ -1,3 +1,5 @@
+import { normalizeCurrency } from "./currency.mjs";
+
 export const MAX_EVENT_BATCH = 100000;
 
 function text(value) {
@@ -30,11 +32,13 @@ export function normalizeEvent(record, index = 0) {
   const placementId = text(first(record, "placementId", "placement_id"));
   const timestampSource = first(record, "timestamp", "event_time");
   const timestamp = isoTimestamp(timestampSource);
+  const currency = normalizeCurrency(record.currency);
 
   if (!id) return { ok: false, error: `Event ${index + 1} is missing id.` };
   if (!new Set(["impression", "click"]).has(type)) return { ok: false, error: `Event ${id} has unsupported type.` };
   if (!campaignId || !placementId) return { ok: false, error: `Event ${id} is missing campaign or placement.` };
   if (!timestampSource || !timestamp) return { ok: false, error: `Event ${id} has an invalid timestamp.` };
+  if (!currency) return { ok: false, error: `Event ${id} has an invalid currency code.` };
 
   return {
     ok: true,
@@ -48,7 +52,7 @@ export function normalizeEvent(record, index = 0) {
       requestId: text(first(record, "requestId", "request_id")),
       clickId: text(first(record, "clickId", "click_id")),
       cost: Math.max(0, number(first(record, "cost", "spend", "win_price"))),
-      currency: text(record.currency).toUpperCase() || "USD",
+      currency,
       traffic: {
         site_domain: text(first(record, "site_domain", "siteDomain")),
         page_domain: text(first(record, "page_domain", "pageDomain")),

@@ -5,11 +5,13 @@ import { scoreTraffic } from "./ivt.mjs";
 import { optimizeSpend } from "./optimizer.mjs";
 import { buildActionQueue } from "./connectors.mjs";
 import { normalizePolicy } from "./policy.mjs";
+import { assertSingleCurrency } from "./currency.mjs";
 
 export function runPlatformPipeline(input) {
   const policy = normalizePolicy(input?.policy);
   const ingestion = ingestEvents(input?.events ?? []);
   const postbackHub = processPostbacks(input?.postbacks ?? []);
+  const currency = assertSingleCurrency(ingestion.events, postbackHub.postbacks);
   const attribution = attributePostbacks(ingestion.events, postbackHub.postbacks, { ...input?.attribution, windowMs: policy.attributionWindowDays * 24 * 60 * 60 * 1000 });
   const ivt = scoreTraffic(ingestion.events);
   const decisions = optimizeSpend(ingestion.events, attribution.attributed, ivt.placements, policy);
@@ -29,7 +31,7 @@ export function runPlatformPipeline(input) {
       optimizer: { decisions: decisions.length, actionable: actionQueue.actions.length },
       connector: { id: actionQueue.connector.id, mode: actionQueue.mode },
     },
-    summary: { spend, revenue, roas: spend > 0 ? revenue / spend : 0, conversions: attribution.attributed.length },
+    summary: { currency, spend, revenue, roas: spend > 0 ? revenue / spend : 0, conversions: attribution.attributed.length },
     decisions,
     actions: actionQueue.actions,
     diagnostics: { rejectedEvents: ingestion.rejected, duplicateEvents: ingestion.duplicates, rejectedPostbacks: postbackHub.rejected, duplicatePostbacks: postbackHub.duplicates, unattributedPostbacks: attribution.unattributed },

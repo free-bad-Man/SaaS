@@ -1,3 +1,5 @@
+import { normalizeCurrency } from "./currency.mjs";
+
 function text(value) {
   return value == null ? "" : String(value).trim();
 }
@@ -27,7 +29,8 @@ export function processPostbacks(records) {
     const timestampSource = record.timestamp ?? record.conversion_time;
     const timestamp = timestampSource ? isoTimestamp(timestampSource) : "";
     const revenue = Number(record.revenue ?? record.payout ?? 0);
-    if (!id || !clickId || !campaignId || !timestampSource || !timestamp || !Number.isFinite(revenue) || revenue < 0) {
+    const currency = normalizeCurrency(record.currency);
+    if (!id || !clickId || !campaignId || !timestampSource || !timestamp || !Number.isFinite(revenue) || revenue < 0 || !currency) {
       rejected.push({ index, error: `Postback ${id || index + 1} is invalid.` });
       return;
     }
@@ -36,7 +39,7 @@ export function processPostbacks(records) {
       return;
     }
     seen.add(id);
-    postbacks.push({ id, clickId, campaignId, timestamp, revenue, currency: text(record.currency).toUpperCase() || "USD" });
+    postbacks.push({ id, clickId, campaignId, timestamp, revenue, currency });
   });
 
   return { postbacks, accepted: postbacks.length, rejected, duplicates };

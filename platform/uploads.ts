@@ -1,4 +1,3 @@
-import { HISTORY_SCHEMA_STATEMENTS } from "../db/schema";
 import type { HistoryDatabase } from "./history";
 
 export type UploadStorage = {
@@ -75,11 +74,6 @@ function mapJob(row: UploadRow): UploadJob {
   };
 }
 
-async function ensureSchema(database?: HistoryDatabase) {
-  if (!database) return;
-  await database.batch(HISTORY_SCHEMA_STATEMENTS.map((sql) => database.prepare(sql)));
-}
-
 function safeFileName(name: string) {
   return name.trim().replace(/[^a-zA-Z0-9._-]+/g, "-").slice(0, 120) || "traffic-data.txt";
 }
@@ -118,7 +112,6 @@ export async function createUploadJob(
     return job;
   }
 
-  await ensureSchema(database);
   await database.prepare(
     `INSERT INTO upload_jobs (
       id, project_id, file_key, file_name, content_type, connector, size_bytes, status,
@@ -133,7 +126,6 @@ export async function createUploadJob(
 
 export async function getUploadJob(database: HistoryDatabase | undefined, id: string): Promise<UploadJob | null> {
   if (!database) return memoryStore().jobs.find((job) => job.id === id) ?? null;
-  await ensureSchema(database);
   const row = await database.prepare(
     `SELECT id, project_id, file_key, file_name, content_type, connector, size_bytes, status,
       processed_rows, total_rows, error_count, error_json, run_id, created_at, updated_at

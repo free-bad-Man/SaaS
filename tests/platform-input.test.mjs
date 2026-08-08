@@ -25,7 +25,8 @@ test("parses CSV rows and exports pipeline decisions", () => {
   assert.equal(payload.events.length, 1);
 
   const report = createPipelineReportCsv(runPlatformPipeline(PLATFORM_PAYLOAD));
-  assert.match(report, /^campaign_id,placement_id,spend,revenue/);
+  assert.match(report, /^campaign_id,placement_id,currency,spend,revenue/);
+  assert.match(report, /cmp-1,plc-risk,USD/);
   assert.match(report, /cmp-1,plc-risk/);
   assert.match(report, /PAUSE,High IVT risk/);
 });

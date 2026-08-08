@@ -13,7 +13,7 @@ const platformModules = [
   { number: "03", name: "IVT Guard", status: "LIVE", text: "Score traffic quality with transparent rules and evidence before any production block.", meta: "IVT · evidence · shadow-mode" },
   { number: "04", name: "Attribution", status: "BETA", text: "Tie conversions and revenue back to sources, placements, campaigns, and media cost.", meta: "CPA · ROAS · revenue" },
   { number: "05", name: "Spend Optimizer", status: "ACTIVE", text: "Combine unit economics and IVT risk into explainable scale, watch, and pause decisions.", meta: "rules · alerts · actions" },
-  { number: "06", name: "DSP Connectors", status: "SYNCED", text: "Pull reporting data and return approved actions through platform-specific APIs.", meta: "DV360 · Google · custom DSP" },
+  { number: "06", name: "DSP Connectors", status: "PLANNED", text: "Roadmap adapters for pulling reporting data and returning approved actions through platform-specific APIs.", meta: "DV360 · Google · Taboola roadmap" },
 ] as const;
 
 const deliverables = [
@@ -51,13 +51,13 @@ export default function Home() {
         <div className="hero-glow" aria-hidden="true" />
         <div className="hero-copy">
           <p className="eyebrow"><span className="eyebrow-dot" /> PROGRAMMATIC OPERATIONS PLATFORM</p>
-          <h1>Run the whole media loop.<br />See every decision.</h1>
-          <p className="lead">3VE.4 ingests advertising events, filters IVT, attributes conversions, measures CPA and ROAS, and returns explainable optimization decisions to buying platforms.</p>
+          <h1>See why traffic was rejected.<br />And what it cost you.</h1>
+          <p className="lead">3VE.4 combines explainable traffic-quality evidence with CPA and ROAS, turning advertising logs into reproducible watch, pause, and scale decisions.</p>
           <div className="hero-actions">
             <Link className="button button-primary" href="/platform">Open platform console <span aria-hidden="true">→</span></Link>
             <a className="button button-secondary" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request a pilot ↗</a>
           </div>
-          <div className="hero-notes" aria-label="Platform benefits"><span><i /> OpenRTB + postbacks</span><span><i /> Explainable automation</span><span><i /> Cloud or on-premise</span></div>
+          <div className="hero-notes" aria-label="Platform benefits"><span><i /> OpenRTB + postbacks</span><span><i /> Explainable decisions</span><span><i /> Cloud workspace</span></div>
         </div>
 
         <div className="product-frame" aria-label="3VE.4 control plane preview">
@@ -65,7 +65,7 @@ export default function Home() {
           <div className="product-layout">
             <aside className="product-sidebar" aria-hidden="true"><span className="sidebar-brand"><b>3V</b></span><span className="sidebar-active" /><span /><span /><span /></aside>
             <div className="product-content">
-              <div className="product-head"><div><span>CAMPAIGN ORCHESTRATION</span><strong>portfolio-global</strong></div><code>6 modules online</code></div>
+              <div className="product-head"><div><span>CAMPAIGN ORCHESTRATION</span><strong>portfolio-global</strong></div><code>5 live · connectors planned</code></div>
               <div className="product-grid">
                 <section className="risk-panel">
                   <span className="panel-label">Blended ROAS</span>
@@ -79,7 +79,7 @@ export default function Home() {
                     <li><i /><span>Postbacks normalized</span><b>9,412</b></li>
                     <li><i /><span>Attributed conversions</span><b>787</b></li>
                     <li><i /><span>At-risk spend detected</span><b>$2,570</b></li>
-                    <li><i /><span>DSP connectors healthy</span><b>4 / 4</b></li>
+                    <li><i /><span>Connector adapters planned</span><b>3</b></li>
                   </ul>
                 </section>
               </div>
@@ -93,19 +93,19 @@ export default function Home() {
 
       <section className="dashboard-proof shell" aria-labelledby="dashboard-proof-title">
         <div className="dashboard-proof-heading">
-          <div><p className="section-label">Working platform</p><h2 id="dashboard-proof-title">All six modules.<br />One live control plane.</h2></div>
-          <div className="dashboard-proof-copy"><p>This is the running 3VE.4 workspace, not a concept mockup. The module rail shows ingestion, postbacks, IVT, attribution, optimization, and DSP connectors operating as one decision pipeline.</p><Link href="/platform">Open the interactive console →</Link></div>
+          <div><p className="section-label">Working platform</p><h2 id="dashboard-proof-title">Five working modules.<br />One connector roadmap.</h2></div>
+          <div className="dashboard-proof-copy"><p>This is the running 3VE.4 workspace, not a concept mockup. Ingestion, postbacks, IVT, attribution, and optimization operate as one decision pipeline; external DSP adapters are clearly marked as planned.</p><Link href="/platform">Open the interactive console →</Link></div>
         </div>
         <div className="dashboard-live-frame">
-          <div className="dashboard-live-label"><span><i /> LIVE API WORKSPACE</span><Link href="/platform">Open full console →</Link></div>
+          <div className="dashboard-live-label"><span><i /> PUBLIC API DEMO</span><Link href="/platform">Open full console →</Link></div>
           <PlatformConsole embedded />
         </div>
       </section>
 
       <section className="module-section shell" id="modules">
         <div className="section-heading">
-          <div><p className="section-label">Platform + services</p><h2>One platform.<br />Six sellable services.</h2></div>
-          <p>Each module works as a focused standalone engagement. Together they form the complete operating loop across traffic, conversions, economics, and buying actions.</p>
+          <div><p className="section-label">Platform + services</p><h2>One platform.<br />Modular engagements.</h2></div>
+          <p>Five modules already operate as one pipeline. Connector delivery is scoped as a paid integration engagement for the client’s actual buying stack.</p>
         </div>
         <div className="module-grid">
           {platformModules.map((module) => <article key={module.number}><div className="module-card-top"><span>{module.number}</span><i>{module.status}</i></div><h3>{module.name}</h3><p>{module.text}</p><small>{module.meta}</small><a className="module-service-link" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request this module ↗</a></article>)}
@@ -133,7 +133,7 @@ export default function Home() {
 
       <section className="process-section" id="process"><div className="shell process-grid"><div className="process-copy"><p className="section-label light">Commercial rollout</p><h2>Connect once.<br />Improve continuously.</h2><p>The first deployment covers a complete campaign loop, not an isolated report: events enter the platform, conversions are attributed, traffic is scored, and decisions reach an approval queue.</p></div><ol className="steps">{steps.map(([title, text], index) => <li key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></div></section>
 
-      <section className="offer-section shell" id="offer"><div className="offer-card dual-offer-card"><div className="offer-main"><p className="section-label">Standalone service</p><h2>Start with one module</h2><p>Choose the immediate bottleneck: ingestion, postbacks, IVT, attribution, optimization, or a DSP connector.</p><strong className="standalone-price">from $1,500</strong><ul><li>Defined module boundary</li><li>One real data source</li><li>Working integration or report</li><li>Acceptance criteria and tests</li><li>Deployment documentation</li><li>Upgrade path to 3VE.4</li></ul><a className="button button-secondary module-offer-button" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request a module ↗</a></div><div className="offer-price"><span>Complete platform pilot</span><strong>from $5,000</strong><p>One integrated campaign workspace from event ingestion to an explainable optimization queue.</p><ul className="platform-offer-list"><li>Ingestion + postbacks</li><li>IVT + attribution</li><li>CPA/ROAS workspace</li><li>Optimizer decision queue</li><li>One DSP connector</li><li>Handover and deployment docs</li></ul><a className="button button-light" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request platform pilot ↗</a><small>Typical first rollout · 4–6 weeks</small></div></div></section>
+      <section className="offer-section shell" id="offer"><div className="offer-card dual-offer-card"><div className="offer-main"><p className="section-label">Standalone service</p><h2>Start with one module</h2><p>Choose the immediate bottleneck: ingestion, postbacks, IVT, attribution, optimization, or a custom connector implementation.</p><strong className="standalone-price">from $1,500</strong><ul><li>Defined module boundary</li><li>One real data source</li><li>Working integration or report</li><li>Acceptance criteria and tests</li><li>Deployment documentation</li><li>Upgrade path to 3VE.4</li></ul><a className="button button-secondary module-offer-button" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request a module ↗</a></div><div className="offer-price"><span>Complete platform pilot</span><strong>from $5,000</strong><p>One integrated campaign workspace from event ingestion to an explainable optimization queue.</p><ul className="platform-offer-list"><li>Ingestion + postbacks</li><li>IVT + attribution</li><li>CPA/ROAS workspace</li><li>Optimizer decision queue</li><li>One connector implementation</li><li>Handover and deployment docs</li></ul><a className="button button-light" href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request platform pilot ↗</a><small>Typical first rollout · 4–6 weeks</small></div></div></section>
 
       <section className="faq shell"><div><p className="section-label">FAQ</p><h2>Before<br />we connect</h2></div><div className="faq-list"><details open><summary>Does 3VE.4 replace the DSP?</summary><p>No. It is an independent control layer above traffic, conversion, and buying systems. Existing platforms keep delivering media while 3VE.4 normalizes data and coordinates decisions.</p></details><details><summary>Can the platform start without write access?</summary><p>Yes. The first rollout uses read-only data and shadow-mode decisions. API actions are enabled only after the rules and attribution logic have been validated.</p></details><details><summary>Can every module be purchased separately?</summary><p>Yes. Every module has a standalone scope, deliverable, and acceptance criteria. A completed module can later become part of the unified 3VE.4 platform without rebuilding it from scratch.</p></details></div></section>
 

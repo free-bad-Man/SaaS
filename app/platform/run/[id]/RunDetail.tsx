@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPipelineReportCsv } from "@/platform/input.mjs";
 
 type RejectedRow = { index: number; error: string };
-type Decision = { campaignId: string; placementId: string; spend: number; revenue: number; conversions: number; roas: number; cpa: number | null; ivtScore: number; decision: string; reason: string };
+type Decision = { campaignId: string; placementId: string; currency?: string; spend: number; revenue: number; conversions: number; roas: number; cpa: number | null; ivtScore: number; decision: string; reason: string };
 type Action = { id: string; connector: string; campaignId: string; placementId: string; action: string; value: number | null; mode: string; reason: string };
 type DecisionPolicy = { attributionWindowDays: number; pauseIvtScore: number; watchIvtScore: number; pauseRoasBelow: number; watchRoasBelow: number; scaleRoasAtLeast: number; minSpend: number; scaleBidPercent: number; executionMode: "shadow" | "approval" };
 const DEFAULT_POLICY: DecisionPolicy = { attributionWindowDays: 7, pauseIvtScore: 60, watchIvtScore: 30, pauseRoasBelow: 0.65, watchRoasBelow: 1, scaleRoasAtLeast: 1.5, minSpend: 10, scaleBidPercent: 15, executionMode: "shadow" };
@@ -13,15 +13,15 @@ type PipelineResult = {
   generatedAt: string;
   policy?: DecisionPolicy;
   modules: { ingestion: { accepted: number; rejected: number; duplicates: number }; postbacks: { accepted: number; rejected: number; duplicates: number }; attribution: { attributed: number; unattributed: number; matchRate: number }; ivt: { scored: number; riskyPlacements: number }; optimizer: { decisions: number; actionable: number }; connector: { id: string; mode: string } };
-  summary: { spend: number; revenue: number; roas: number; conversions: number };
+  summary: { currency?: string; spend: number; revenue: number; roas: number; conversions: number };
   decisions: Decision[];
   actions: Action[];
   diagnostics: { rejectedEvents: RejectedRow[]; duplicateEvents: string[]; rejectedPostbacks: RejectedRow[]; duplicatePostbacks: string[]; unattributedPostbacks: Array<{ postback?: { id?: string; clickId?: string }; reason?: string }> };
 };
 type Run = { id: string; sourceName: string; connector: string; status: string; eventCount: number; postbackCount: number; createdAt: string; result: PipelineResult };
 
-function usd(value: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
+function formatMoney(value: number, currency = "USD") {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 2 }).format(value);
 }
 
 export default function RunDetail({ runId }: { runId: string }) {
@@ -57,6 +57,7 @@ export default function RunDetail({ runId }: { runId: string }) {
     ];
   }, [run]);
   const policy = run?.result.policy ?? DEFAULT_POLICY;
+  const currency = run?.result.summary.currency ?? "USD";
 
   function exportReport() {
     if (!run) return;
@@ -82,8 +83,8 @@ export default function RunDetail({ runId }: { runId: string }) {
       <section className="run-detail-metrics">
         <article><span>Input rows</span><strong>{run.eventCount + run.postbackCount}</strong><small>{run.eventCount} events · {run.postbackCount} postbacks</small></article>
         <article><span>Accepted events</span><strong>{run.result.modules.ingestion.accepted}</strong><small>{run.result.modules.ingestion.rejected} rejected</small></article>
-        <article><span>Attributed revenue</span><strong>{usd(run.result.summary.revenue)}</strong><small>{run.result.summary.conversions} conversions</small></article>
-        <article><span>Blended ROAS</span><strong>{run.result.summary.roas.toFixed(2)}x</strong><small>{usd(run.result.summary.spend)} spend</small></article>
+        <article><span>Attributed revenue</span><strong>{formatMoney(run.result.summary.revenue, currency)}</strong><small>{run.result.summary.conversions} conversions · {currency}</small></article>
+        <article><span>Blended ROAS</span><strong>{run.result.summary.roas.toFixed(2)}x</strong><small>{formatMoney(run.result.summary.spend, currency)} spend</small></article>
         <article><span>Shadow actions</span><strong>{run.result.modules.optimizer.actionable}</strong><small>{run.result.modules.connector.mode} mode</small></article>
       </section>
 
@@ -98,7 +99,7 @@ export default function RunDetail({ runId }: { runId: string }) {
       <section className="run-detail-card">
         <div className="console-card-title"><div><b>Placement decisions</b><span>Commercial performance and IVT evidence</span></div><small>{run.result.decisions.length} PLACEMENTS</small></div>
         <div className="placement-table-wrap"><table className="placement-table"><thead><tr><th>Placement</th><th>Spend</th><th>Revenue</th><th>Conv.</th><th>CPA</th><th>ROAS</th><th>IVT</th><th>Decision</th></tr></thead><tbody>
-          {run.result.decisions.map((decision) => <tr key={`${decision.campaignId}-${decision.placementId}`}><td><b>{decision.placementId}</b><small>{decision.campaignId}</small></td><td>{usd(decision.spend)}</td><td>{usd(decision.revenue)}</td><td>{decision.conversions}</td><td>{decision.cpa == null ? "—" : usd(decision.cpa)}</td><td><b>{decision.roas.toFixed(2)}x</b></td><td>{decision.ivtScore}</td><td><span className={`optimizer-action action-${decision.decision.toLowerCase()}`}>{decision.decision}</span><small>{decision.reason}</small></td></tr>)}
+          {run.result.decisions.map((decision) => <tr key={`${decision.campaignId}-${decision.placementId}`}><td><b>{decision.placementId}</b><small>{decision.campaignId}</small></td><td>{formatMoney(decision.spend, decision.currency ?? currency)}</td><td>{formatMoney(decision.revenue, decision.currency ?? currency)}</td><td>{decision.conversions}</td><td>{decision.cpa == null ? "—" : formatMoney(decision.cpa, decision.currency ?? currency)}</td><td><b>{decision.roas.toFixed(2)}x</b></td><td>{decision.ivtScore}</td><td><span className={`optimizer-action action-${decision.decision.toLowerCase()}`}>{decision.decision}</span><small>{decision.reason}</small></td></tr>)}
         </tbody></table></div>
       </section>
 

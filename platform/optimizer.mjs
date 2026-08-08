@@ -1,11 +1,13 @@
-import { normalizePolicy } from "./policy.mjs";
+import { assertSingleCurrency } from "./currency.mjs";
+import { decidePlacement, normalizePolicy } from "./policy.mjs";
 
 export function optimizeSpend(events, attributions, ivtPlacements, policyInput = {}) {
   const policy = normalizePolicy(policyInput);
+  const currency = assertSingleCurrency(events, attributions);
   const risk = new Map(ivtPlacements.map((item) => [item.placementId, item]));
   const groups = new Map();
   for (const event of events) {
-    const group = groups.get(event.placementId) ?? { placementId: event.placementId, campaignId: event.campaignId, sourceId: event.sourceId, impressions: 0, clicks: 0, spend: 0, conversions: 0, revenue: 0 };
+    const group = groups.get(event.placementId) ?? { placementId: event.placementId, campaignId: event.campaignId, sourceId: event.sourceId, currency, impressions: 0, clicks: 0, spend: 0, conversions: 0, revenue: 0 };
     group.impressions += event.type === "impression" ? 1 : 0;
     group.clicks += event.type === "click" ? 1 : 0;
     group.spend += event.cost;
@@ -22,21 +24,7 @@ export function optimizeSpend(events, attributions, ivtPlacements, policyInput =
     const ivt = risk.get(group.placementId) ?? { maxScore: 0, averageScore: 0, reasonCodes: [] };
     const roas = group.spend > 0 ? group.revenue / group.spend : 0;
     const cpa = group.conversions > 0 ? group.spend / group.conversions : null;
-    let decision = "KEEP";
-    let reason = "Performance within target";
-    if (ivt.maxScore >= policy.pauseIvtScore) {
-      decision = "PAUSE";
-      reason = "High IVT risk";
-    } else if (group.spend >= policy.minSpend && roas < policy.pauseRoasBelow) {
-      decision = "PAUSE";
-      reason = "ROAS below stop-loss";
-    } else if (ivt.maxScore >= policy.watchIvtScore || (group.spend >= policy.minSpend && roas < policy.watchRoasBelow)) {
-      decision = "WATCH";
-      reason = ivt.maxScore >= policy.watchIvtScore ? "Elevated IVT risk" : "ROAS below break-even";
-    } else if (roas >= policy.scaleRoasAtLeast && ivt.maxScore < policy.watchIvtScore) {
-      decision = "SCALE";
-      reason = "Profitable, low-risk traffic";
-    }
+    const { decision, reason } = decidePlacement({ ivtScore: ivt.maxScore, spend: group.spend, roas }, policy);
     return { ...group, roas, cpa, ivtScore: ivt.maxScore, ivtReasons: ivt.reasonCodes, decision, reason };
   });
 }

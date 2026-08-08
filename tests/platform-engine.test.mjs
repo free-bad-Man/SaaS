@@ -23,3 +23,9 @@ test("summarizes attribution, postback, and optimizer metrics", () => {
   assert.equal(summary.roas.toFixed(2), "1.25");
   assert.equal(money(summary.atRiskSpend), "$2,570");
 });
+
+test("uses the same configurable decision policy as the production optimizer", () => {
+  const analyzed = analyzePlacements(SAMPLE_PLACEMENTS, { scaleRoasAtLeast: 3, pauseIvtScore: 90, watchIvtScore: 60, pauseRoasBelow: 0.1, watchRoasBelow: 0.2 });
+  assert.equal(analyzed.find((item) => item.id === "plc-311").decision, "KEEP");
+  assert.equal(analyzed.find((item) => item.id === "plc-204").decision, "WATCH");
+});

@@ -12,12 +12,21 @@ test("runs the complete modular pipeline from raw events to connector actions", 
   assert.equal(result.modules.ivt.riskyPlacements, 1);
   assert.equal(result.summary.spend, 100);
   assert.equal(result.summary.revenue, 110);
+  assert.equal(result.summary.currency, "USD");
   assert.equal(result.summary.conversions, 2);
   assert.equal(result.summary.roas, 1.1);
   assert.equal(result.decisions.find((item) => item.placementId === "plc-safe").decision, "SCALE");
   assert.equal(result.decisions.find((item) => item.placementId === "plc-risk").decision, "PAUSE");
   assert.equal(result.actions.length, 2);
   assert.ok(result.actions.every((action) => action.mode === "shadow"));
+});
+
+test("rejects mixed spend and revenue currencies before optimization", () => {
+  const postbacks = PLATFORM_PAYLOAD.postbacks.map((postback, index) => index === 0 ? { ...postback, currency: "EUR" } : postback);
+  assert.throws(
+    () => runPlatformPipeline({ ...PLATFORM_PAYLOAD, postbacks }),
+    /Mixed currencies are not supported in one run \(EUR, USD\)/,
+  );
 });
 
 test("keeps malformed and duplicate input visible in diagnostics", () => {

@@ -2,16 +2,50 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { PLATFORM_PAYLOAD } from "./fixtures/platform-payload.mjs";
 
-async function fetchWorker(pathname, init = {}) {
+async function fetchWorker(pathname, init = {}, authenticated = true, userId = "test-user") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("api-test", `${process.pid}-${Date.now()}-${Math.random()}`);
   const { default: worker } = await import(workerUrl.href);
+  const headers = new Headers(init.headers);
+  if (authenticated) {
+    headers.set("oai-authenticated-user-id", userId);
+    headers.set("oai-authenticated-user-email", "test@3ve4.example");
+  }
   return worker.fetch(
-    new Request(`https://3ve4.example${pathname}`, init),
+    new Request(`https://3ve4.example${pathname}`, { ...init, headers }),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
     { waitUntil() {}, passThroughOnException() {} },
   );
 }
+
+test("keeps anonymous visitors in fixed public demo mode", async () => {
+  const accessResponse = await fetchWorker("/api/platform/access", {}, false);
+  const access = await accessResponse.json();
+  assert.equal(access.access.plan, "demo");
+  assert.equal(access.access.canUsePaidFeatures, false);
+
+  const projectsResponse = await fetchWorker("/api/platform/projects", {}, false);
+  assert.equal(projectsResponse.status, 401);
+  assert.equal((await projectsResponse.json()).code, "AUTH_REQUIRED");
+
+  const demoResponse = await fetchWorker("/api/platform/demo", { method: "POST" }, false);
+  assert.equal(demoResponse.status, 200);
+  const demo = await demoResponse.json();
+  assert.equal(demo.demo, true);
+  assert.equal(demo.modules.ingestion.accepted, 4);
+});
+
+test("rate-limits repeated public demo execution", async () => {
+  const headers = { "cf-connecting-ip": "203.0.113.42" };
+  for (let index = 0; index < 10; index += 1) {
+    const response = await fetchWorker("/api/platform/demo", { method: "POST", headers }, false);
+    assert.equal(response.status, 200);
+  }
+  const limited = await fetchWorker("/api/platform/demo", { method: "POST", headers }, false);
+  assert.equal(limited.status, 429);
+  assert.equal((await limited.json()).code, "RATE_LIMITED");
+  assert.ok(Number(limited.headers.get("retry-after")) >= 1);
+});
 
 test("exposes module health and connector capabilities", async () => {
   const healthResponse = await fetchWorker("/api/platform/health");
@@ -24,13 +58,16 @@ test("exposes module health and connector capabilities", async () => {
   const connectorResponse = await fetchWorker("/api/platform/connectors");
   const connectorBody = await connectorResponse.json();
   assert.equal(connectorBody.connectors.length, 4);
+  assert.equal(connectorBody.connectors.find((connector) => connector.id === "openrtb").status, "available");
+  assert.equal(connectorBody.connectors.find((connector) => connector.id === "dv360").status, "planned");
 });
 
 test("runs the complete platform through the server API", async () => {
+  const projects = await (await fetchWorker("/api/platform/projects")).json();
   const response = await fetchWorker("/api/platform/run", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify(PLATFORM_PAYLOAD),
+    body: JSON.stringify({ ...PLATFORM_PAYLOAD, projectId: projects.projects[0].id, sourceName: "api-test.json" }),
   });
   assert.equal(response.status, 200);
   const body = await response.json();
@@ -73,6 +110,19 @@ test("persists projects and reopens saved pipeline runs", async () => {
   const detail = await detailResponse.json();
   assert.equal(detail.run.id, runResult.runId);
   assert.equal(detail.run.result.modules.optimizer.actionable, 2);
+});
+
+test("isolates projects and run history by authenticated owner", async () => {
+  const ownerProjects = await (await fetchWorker("/api/platform/projects")).json();
+  const ownerProjectId = ownerProjects.projects[0].id;
+  const otherProjectsResponse = await fetchWorker("/api/platform/projects", {}, true, "other-user");
+  assert.equal(otherProjectsResponse.status, 200);
+  const otherProjects = await otherProjectsResponse.json();
+  assert.equal(otherProjects.projects.some((project) => project.id === ownerProjectId), false);
+
+  const foreignHistory = await fetchWorker(`/api/platform/runs?projectId=${ownerProjectId}`, {}, true, "other-user");
+  assert.equal(foreignHistory.status, 200);
+  assert.deepEqual((await foreignHistory.json()).runs, []);
 });
 
 test("queues uploaded files, processes them, and records row diagnostics", async () => {

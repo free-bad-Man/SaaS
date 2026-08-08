@@ -11,6 +11,7 @@ export type Placement = {
   ivtScore: number;
   postbacks: number;
   duplicates: number;
+  currency?: string;
 };
 
 export type AnalyzedPlacement = Placement & {
@@ -23,8 +24,9 @@ export type AnalyzedPlacement = Placement & {
 };
 
 export const SAMPLE_PLACEMENTS: Placement[];
-export function analyzePlacements(placements: Placement[]): AnalyzedPlacement[];
-export function summarizePlatform(placements: Placement[]): {
+export function analyzePlacements(placements: Placement[], policy?: Record<string, unknown>): AnalyzedPlacement[];
+export function summarizePlatform(placements: Placement[], policy?: Record<string, unknown>): {
+  currency?: string;
   impressions: number;
   clicks: number;
   conversions: number;
@@ -42,4 +44,4 @@ export function summarizePlatform(placements: Placement[]): {
   ctr: number;
   cvr: number;
 };
-export function money(value: number): string;
+export function money(value: number, currency?: string): string;

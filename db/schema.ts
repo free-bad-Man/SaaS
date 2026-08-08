@@ -1,8 +1,47 @@
 export const PROJECTS_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS projects (
     id TEXT PRIMARY KEY,
+    owner_user_id TEXT NOT NULL,
     name TEXT NOT NULL,
     created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )
+`;
+
+export const PROJECTS_OWNER_INDEX_SQL = `
+  CREATE INDEX IF NOT EXISTS idx_projects_owner_updated_at
+  ON projects(owner_user_id, updated_at DESC)
+`;
+
+export const ACCOUNTS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS accounts (
+    user_id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    plan TEXT NOT NULL,
+    status TEXT NOT NULL,
+    trial_ends_at TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )
+`;
+
+export const USAGE_PERIODS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS usage_periods (
+    user_id TEXT NOT NULL,
+    period TEXT NOT NULL,
+    processed_rows INTEGER NOT NULL DEFAULT 0,
+    upload_bytes INTEGER NOT NULL DEFAULT 0,
+    run_count INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, period)
+  )
+`;
+
+export const API_RATE_LIMITS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS api_rate_limits (
+    rate_key TEXT PRIMARY KEY,
+    window_start INTEGER NOT NULL,
+    request_count INTEGER NOT NULL DEFAULT 0,
     updated_at TEXT NOT NULL
   )
 `;
@@ -68,6 +107,10 @@ export const PROJECT_POLICIES_TABLE_SQL = `
 
 export const HISTORY_SCHEMA_STATEMENTS = [
   PROJECTS_TABLE_SQL,
+  PROJECTS_OWNER_INDEX_SQL,
+  ACCOUNTS_TABLE_SQL,
+  USAGE_PERIODS_TABLE_SQL,
+  API_RATE_LIMITS_TABLE_SQL,
   PIPELINE_RUNS_TABLE_SQL,
   PIPELINE_RUNS_PROJECT_INDEX_SQL,
   UPLOAD_JOBS_TABLE_SQL,

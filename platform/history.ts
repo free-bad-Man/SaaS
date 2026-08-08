@@ -1,5 +1,3 @@
-import { HISTORY_SCHEMA_STATEMENTS } from "../db/schema";
-
 type D1Result<T> = { results?: T[] };
 type D1Statement = {
   bind(...values: unknown[]): D1Statement;
@@ -15,6 +13,7 @@ export type HistoryDatabase = {
 
 export type ProjectRecord = {
   id: string;
+  ownerUserId: string;
   name: string;
   createdAt: string;
   updatedAt: string;
@@ -38,6 +37,7 @@ export type PipelineRunRecord = PipelineRunSummary & { result: unknown };
 
 type ProjectRow = {
   id: string;
+  owner_user_id: string;
   name: string;
   created_at: string;
   updated_at: string;
@@ -68,7 +68,7 @@ function memoryStore(): MemoryStore {
 }
 
 function mapProject(row: ProjectRow): ProjectRecord {
-  return { id: row.id, name: row.name, createdAt: row.created_at, updatedAt: row.updated_at };
+  return { id: row.id, ownerUserId: row.owner_user_id, name: row.name, createdAt: row.created_at, updatedAt: row.updated_at };
 }
 
 function mapRun(row: RunRow): PipelineRunSummary {
@@ -103,47 +103,41 @@ function summarizeRun(run: PipelineRunRecord): PipelineRunSummary {
   };
 }
 
-async function ensureSchema(database?: HistoryDatabase) {
-  if (!database) return;
-  await database.batch(HISTORY_SCHEMA_STATEMENTS.map((sql) => database.prepare(sql)));
-  await database.prepare("PRAGMA optimize").run();
-}
-
-export async function createProject(database: HistoryDatabase | undefined, name: string): Promise<ProjectRecord> {
+export async function createProject(database: HistoryDatabase | undefined, name: string, ownerUserId: string): Promise<ProjectRecord> {
   const cleanName = name.trim();
   if (!cleanName) throw new Error("Project name is required.");
   if (cleanName.length > 80) throw new Error("Project name must be 80 characters or fewer.");
   const now = new Date().toISOString();
-  const project = { id: crypto.randomUUID(), name: cleanName, createdAt: now, updatedAt: now };
+  if (!ownerUserId) throw new Error("Project owner is required.");
+  const project = { id: crypto.randomUUID(), ownerUserId, name: cleanName, createdAt: now, updatedAt: now };
 
   if (!database) {
     memoryStore().projects.unshift(project);
     return project;
   }
 
-  await ensureSchema(database);
   await database.prepare(
-    "INSERT INTO projects (id, name, created_at, updated_at) VALUES (?, ?, ?, ?)",
-  ).bind(project.id, project.name, project.createdAt, project.updatedAt).run();
+    "INSERT INTO projects (id, owner_user_id, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+  ).bind(project.id, project.ownerUserId, project.name, project.createdAt, project.updatedAt).run();
   return project;
 }
 
-export async function listProjects(database?: HistoryDatabase): Promise<ProjectRecord[]> {
+export async function listProjects(database: HistoryDatabase | undefined, ownerUserId: string): Promise<ProjectRecord[]> {
+  if (!ownerUserId) throw new Error("Project owner is required.");
   if (!database) {
     const store = memoryStore();
-    if (store.projects.length === 0) await createProject(undefined, "Demo workspace");
-    return [...store.projects].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    if (!store.projects.some((project) => project.ownerUserId === ownerUserId)) await createProject(undefined, "Default workspace", ownerUserId);
+    return store.projects.filter((project) => project.ownerUserId === ownerUserId).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
-  await ensureSchema(database);
   let rows = (await database.prepare(
-    "SELECT id, name, created_at, updated_at FROM projects ORDER BY updated_at DESC",
-  ).all<ProjectRow>()).results ?? [];
+    "SELECT id, owner_user_id, name, created_at, updated_at FROM projects WHERE owner_user_id = ? ORDER BY updated_at DESC",
+  ).bind(ownerUserId).all<ProjectRow>()).results ?? [];
   if (rows.length === 0) {
-    await createProject(database, "Demo workspace");
+    await createProject(database, "Default workspace", ownerUserId);
     rows = (await database.prepare(
-      "SELECT id, name, created_at, updated_at FROM projects ORDER BY updated_at DESC",
-    ).all<ProjectRow>()).results ?? [];
+      "SELECT id, owner_user_id, name, created_at, updated_at FROM projects WHERE owner_user_id = ? ORDER BY updated_at DESC",
+    ).bind(ownerUserId).all<ProjectRow>()).results ?? [];
   }
   return rows.map(mapProject);
 }
@@ -152,6 +146,7 @@ export async function savePipelineRun(
   database: HistoryDatabase | undefined,
   input: {
     projectId: string;
+    ownerUserId: string;
     sourceName: string;
     connector: string;
     eventCount: number;
@@ -179,15 +174,14 @@ export async function savePipelineRun(
 
   if (!database) {
     const store = memoryStore();
-    const project = store.projects.find((item) => item.id === input.projectId);
+    const project = store.projects.find((item) => item.id === input.projectId && item.ownerUserId === input.ownerUserId);
     if (!project) throw new Error("Project not found.");
     project.updatedAt = now;
     store.runs.unshift(run);
     return run;
   }
 
-  await ensureSchema(database);
-  const project = await database.prepare("SELECT id FROM projects WHERE id = ?").bind(input.projectId).first<{ id: string }>();
+  const project = await database.prepare("SELECT id FROM projects WHERE id = ? AND owner_user_id = ?").bind(input.projectId, input.ownerUserId).first<{ id: string }>();
   if (!project) throw new Error("Project not found.");
   await database.batch([
     database.prepare(
@@ -204,29 +198,35 @@ export async function savePipelineRun(
   return run;
 }
 
-export async function listPipelineRuns(database: HistoryDatabase | undefined, projectId: string): Promise<PipelineRunSummary[]> {
+export async function listPipelineRuns(database: HistoryDatabase | undefined, projectId: string, ownerUserId: string): Promise<PipelineRunSummary[]> {
   if (!projectId) throw new Error("projectId is required.");
   if (!database) {
-    return memoryStore().runs.filter((run) => run.projectId === projectId).slice(0, 25).map(summarizeRun);
+    const ownsProject = memoryStore().projects.some((project) => project.id === projectId && project.ownerUserId === ownerUserId);
+    return ownsProject ? memoryStore().runs.filter((run) => run.projectId === projectId).slice(0, 25).map(summarizeRun) : [];
   }
 
-  await ensureSchema(database);
   const rows = (await database.prepare(
     `SELECT id, project_id, source_name, connector, status, event_count, postback_count,
       accepted_events, attributed_conversions, shadow_actions, created_at
-     FROM pipeline_runs WHERE project_id = ? ORDER BY created_at DESC LIMIT 25`,
-  ).bind(projectId).all<RunRow>()).results ?? [];
+     FROM pipeline_runs WHERE project_id = ? AND EXISTS (
+       SELECT 1 FROM projects WHERE projects.id = pipeline_runs.project_id AND projects.owner_user_id = ?
+     ) ORDER BY created_at DESC LIMIT 25`,
+  ).bind(projectId, ownerUserId).all<RunRow>()).results ?? [];
   return rows.map(mapRun);
 }
 
-export async function getPipelineRun(database: HistoryDatabase | undefined, id: string): Promise<PipelineRunRecord | null> {
-  if (!database) return memoryStore().runs.find((run) => run.id === id) ?? null;
-  await ensureSchema(database);
+export async function getPipelineRun(database: HistoryDatabase | undefined, id: string, ownerUserId: string): Promise<PipelineRunRecord | null> {
+  if (!database) {
+    const run = memoryStore().runs.find((item) => item.id === id);
+    return run && memoryStore().projects.some((project) => project.id === run.projectId && project.ownerUserId === ownerUserId) ? run : null;
+  }
   const row = await database.prepare(
     `SELECT id, project_id, source_name, connector, status, event_count, postback_count,
       accepted_events, attributed_conversions, shadow_actions, result_json, created_at
-     FROM pipeline_runs WHERE id = ?`,
-  ).bind(id).first<RunRow>();
+     FROM pipeline_runs WHERE id = ? AND EXISTS (
+       SELECT 1 FROM projects WHERE projects.id = pipeline_runs.project_id AND projects.owner_user_id = ?
+     )`,
+  ).bind(id, ownerUserId).first<RunRow>();
   if (!row) return null;
   return { ...mapRun(row), result: JSON.parse(row.result_json ?? "{}") };
 }

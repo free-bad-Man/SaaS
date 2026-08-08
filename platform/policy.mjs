@@ -32,3 +32,17 @@ export function normalizePolicy(input = {}) {
   if (policy.scaleRoasAtLeast <= policy.watchRoasBelow) throw new Error("SCALE ROAS threshold must exceed WATCH threshold.");
   return policy;
 }
+
+export function decidePlacement(metrics, policyInput = {}) {
+  const policy = normalizePolicy(policyInput);
+  const ivtScore = Number.isFinite(Number(metrics?.ivtScore)) ? Number(metrics.ivtScore) : 0;
+  const spend = Number.isFinite(Number(metrics?.spend)) ? Math.max(0, Number(metrics.spend)) : 0;
+  const roas = Number.isFinite(Number(metrics?.roas)) ? Math.max(0, Number(metrics.roas)) : 0;
+
+  if (ivtScore >= policy.pauseIvtScore) return { decision: "PAUSE", reason: "High IVT risk" };
+  if (spend >= policy.minSpend && roas < policy.pauseRoasBelow) return { decision: "PAUSE", reason: "ROAS below stop-loss" };
+  if (ivtScore >= policy.watchIvtScore) return { decision: "WATCH", reason: "Elevated IVT risk" };
+  if (spend >= policy.minSpend && roas < policy.watchRoasBelow) return { decision: "WATCH", reason: "ROAS below break-even" };
+  if (roas >= policy.scaleRoasAtLeast && ivtScore < policy.watchIvtScore) return { decision: "SCALE", reason: "Profitable, low-risk traffic" };
+  return { decision: "KEEP", reason: "Performance within target" };
+}

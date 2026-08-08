@@ -59,10 +59,11 @@ function csvCell(value) {
 }
 
 export function createPipelineReportCsv(result) {
-  const header = ["campaign_id", "placement_id", "spend", "revenue", "conversions", "roas", "cpa", "ivt_score", "decision", "reason"];
+  const header = ["campaign_id", "placement_id", "currency", "spend", "revenue", "conversions", "roas", "cpa", "ivt_score", "decision", "reason"];
   const rows = (result?.decisions ?? []).map((decision) => [
     decision.campaignId,
     decision.placementId,
+    decision.currency ?? result?.summary?.currency ?? "USD",
     decision.spend,
     decision.revenue,
     decision.conversions,
