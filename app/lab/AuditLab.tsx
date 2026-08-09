@@ -162,7 +162,7 @@ export default function AuditLab() {
       </section>
 
       <section className="lab-cta">
-        <div className="lab-shell"><div><span>Need an audit of real data?</span><h2>Start with a limited export.</h2></div><a href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Discuss the project <span aria-hidden="true">↗</span></a></div>
+        <div className="lab-shell"><div><span>Need an audit of real data?</span><h2>Start with a limited export.</h2></div><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Discuss the project <span aria-hidden="true">↗</span></a></div>
       </section>
     </main>
   );

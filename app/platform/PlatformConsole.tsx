@@ -385,7 +385,7 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
         <div className="platform-shell platform-nav">
           <Link className="platform-brand" href="/" aria-label="3VE.4 home"><span>3V</span><b>3VE.4</b></Link>
           <div className="platform-product"><i /> ADTECH CONTROL PLANE <small>{canUsePaidFeatures ? `${access?.plan.toUpperCase()} WORKSPACE` : "PUBLIC DEMO"}</small></div>
-          <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link><a href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
+          <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
         </div>
       </header> : null}
 
@@ -426,7 +426,7 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
             <small className={`workspace-state state-${historyState}`}>{historyState === "loading" ? "SYNCING" : historyState === "error" ? "STORAGE ERROR" : "HISTORY READY"}</small>
           </div> : access ? <section className={`platform-paywall${embedded ? " paywall-embedded" : ""}`}>
             <div><span>PUBLIC SHOWCASE</span><b>Real-data operations are a paid feature.</b><p>The demo uses a fixed server-side dataset. Uploads, projects, history, policies, exports, and API ingestion require an active trial or paid plan.</p></div>
-            {!embedded ? <div className="paywall-actions"><a href="/signin-with-chatgpt?return_to=%2Fplatform">Start 14-day trial</a><a href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Request Pro access ↗</a></div> : null}
+            {!embedded ? <div className="paywall-actions"><a href="/signin-with-chatgpt?return_to=%2Fplatform">Start 14-day trial</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request Pro access ↗</a></div> : null}
           </section> : null}
 
           {canUsePaidFeatures ? <div className="data-input-bar">

@@ -17,4 +17,4 @@ Production validation:
 npm test
 ```
 
-The site does not collect personal data or connect to advertising accounts. The primary contact actions open the provider profile on Freelance.ru. All metrics shown in the demo are synthetic and match the reproducible sample included with the project.
+The site does not collect personal data or connect to advertising accounts. The primary contact actions open adminez.sh. All metrics shown in the demo are synthetic and match the reproducible sample included with the project.

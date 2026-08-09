@@ -104,7 +104,7 @@ export default function SampleAuditLead() {
           <div><span className="sample-report-label">TOP FINDINGS</span>{report.topFindings.length ? report.topFindings.map((finding) => <p key={finding.code}><b>{finding.title}</b><small>{finding.count} row{finding.count === 1 ? "" : "s"}</small></p>) : <p><b>No configured risk signals found</b><small>Low-risk sample</small></p>}</div>
           <div><span className="sample-report-label">RISK PREVIEW</span>{report.preview.map((row) => <p key={row.id}><span className={`sample-decision sample-${row.decision.toLowerCase()}`}>{row.decision}</span><b>{row.id}</b><small>{row.score} · {row.primaryReason?.title ?? "No finding"}</small></p>)}</div>
         </div>
-        <div className="sample-report-actions"><a href="https://freelance.ru/darkPulsar" target="_blank" rel="noreferrer">Discuss the full audit ↗</a><button type="button" onClick={() => { setReport(null); setFile(null); setState("idle"); }}>Analyze another sample</button></div>
+        <div className="sample-report-actions"><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Discuss the full audit ↗</a><button type="button" onClick={() => { setReport(null); setFile(null); setState("idle"); }}>Analyze another sample</button></div>
       </div>}
     </div>
   </section>;

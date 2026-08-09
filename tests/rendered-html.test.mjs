@@ -39,8 +39,8 @@ test("server-renders the complete 3VE.4 platform landing", async () => {
   assert.match(html, /from \$5,000/);
   assert.match(html, /\$1,550/);
   assert.doesNotMatch(html, /₽|RUB/);
-  assert.match(html, /https:\/\/freelance\.ru\/darkPulsar/);
-  assert.doesNotMatch(html, /https:\/\/www\.fl\.ru\//);
+  assert.match(html, /https:\/\/adminez\.sh\//);
+  assert.doesNotMatch(html, /freelance\.ru|darkPulsar|https:\/\/www\.fl\.ru\//i);
   assert.match(html, /https:\/\/github\.com\/free-bad-Man\/SaaS/);
   assert.match(html, /href="\/platform"/);
   assert.match(html, /href="\/lab"/);
