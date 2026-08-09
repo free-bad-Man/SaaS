@@ -84,6 +84,16 @@ test("server-renders the pipeline run detail route", async () => {
   assert.match(html, /Loading pipeline result/);
 });
 
+test("server-renders the private lead inbox shell", async () => {
+  const response = await render("/admin/leads");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /<title>Lead Inbox — 3VE\.4<\/title>/);
+  assert.match(html, /Sample-audit leads/);
+  assert.match(html, /PRIVATE OPERATIONS/);
+  assert.match(html, /name="robots" content="noindex, nofollow"/);
+});
+
 test("keeps the final site free of starter preview artifacts", async () => {
   const [page, platform, lab, layout, styles, cursorTheme, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

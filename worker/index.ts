@@ -3,11 +3,17 @@ import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } fr
 import handler from "vinext/server/app-router-entry";
 import { handlePlatformApi } from "../platform/api.mjs";
 import { handleLeadApi } from "../platform/lead-api.mjs";
+import { handleAdminApi } from "../platform/admin-api.mjs";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
   DB?: unknown;
   FILES?: unknown;
+  ADMIN_EMAILS?: string;
+  ADMIN_USER_IDS?: string;
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_CHAT_ID?: string;
+  PUBLIC_SITE_URL?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -32,7 +38,10 @@ const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
-    const leadResponse = await handleLeadApi(request, env.DB);
+    const adminResponse = await handleAdminApi(request, env.DB, env);
+    if (adminResponse) return adminResponse;
+
+    const leadResponse = await handleLeadApi(request, env.DB, env, (promise: Promise<unknown>) => ctx.waitUntil(promise));
     if (leadResponse) return leadResponse;
 
     const platformResponse = await handlePlatformApi(request, env.DB, env.FILES);

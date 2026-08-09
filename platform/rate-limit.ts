@@ -1,4 +1,5 @@
 import type { HistoryDatabase } from "./history";
+import { API_RATE_LIMITS_TABLE_SQL } from "../db/schema";
 
 type RateLimitOptions = { scope: string; limit: number; windowMs?: number };
 type RateLimitEntry = { windowStart: number; count: number };
@@ -49,6 +50,8 @@ export async function enforceRateLimit(database: HistoryDatabase | undefined, re
     current.count += 1;
     return;
   }
+
+  await database.prepare(API_RATE_LIMITS_TABLE_SQL).run();
 
   const current = await database.prepare("SELECT window_start, request_count FROM api_rate_limits WHERE rate_key = ?").bind(key).first<RateLimitRow>();
   if (!current || current.window_start !== windowStart) {

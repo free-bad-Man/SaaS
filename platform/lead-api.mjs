@@ -1,6 +1,7 @@
 import { analyzeRecords, parseInput, summarize } from "../lib/audit-engine.mjs";
 import { saveSampleAuditLead } from "./leads.ts";
 import { enforceRateLimit, RateLimitError } from "./rate-limit.ts";
+import { sendLeadTelegramNotification } from "./notifications.mjs";
 
 const MAX_BODY_BYTES = 384 * 1024;
 const MAX_SOURCE_BYTES = 256 * 1024;
@@ -48,7 +49,7 @@ function topFindings(results) {
   return [...findings.values()].sort((left, right) => right.count - left.count || right.weight - left.weight).slice(0, 5);
 }
 
-export async function handleLeadApi(request, database) {
+export async function handleLeadApi(request, database, notificationEnv = {}, waitUntil = null) {
   const url = new URL(request.url);
   if (!url.pathname.startsWith("/api/leads")) return null;
   if (url.pathname !== "/api/leads/sample-audit" || request.method !== "POST") return json({ error: "Route not found or method not allowed." }, 405);
@@ -85,6 +86,11 @@ export async function handleLeadApi(request, database) {
       averageScore: summary.averageScore,
       topFindings: findings.map(({ code, title, count }) => ({ code, title, count })),
     });
+    const notification = sendLeadTelegramNotification(notificationEnv, lead).catch((error) => {
+      console.error("Lead notification failed.", error instanceof Error ? error.message : "Unknown error");
+    });
+    if (typeof waitUntil === "function") waitUntil(notification);
+    else await notification;
 
     const preview = [...results].sort((left, right) => right.score - left.score).slice(0, 5).map((result) => ({
       id: result.id,
