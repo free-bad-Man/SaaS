@@ -404,7 +404,7 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
 
         <section className="console-main">
           <div className="console-heading">
-            <div><p>PROGRAMMATIC OPERATIONS</p><h1>Unified campaign control</h1><span>{canUsePaidFeatures ? "Your private workspace across ingestion, attribution, traffic quality, and media buying." : "A fixed synthetic showcase. Real data and saved operations require an active workspace."}</span></div>
+            <div><p>ADTECH CONTROL PLANE</p><h1>Unified campaign control</h1><span>{canUsePaidFeatures ? "Your private workspace across ingestion, attribution, traffic quality, and media buying." : "A fixed synthetic showcase. Real data and saved operations require an active workspace."}</span></div>
             <button type="button" className={pipelineState === "complete" ? "is-queued" : ""} disabled={pipelineState === "running"} onClick={runApiPipeline}>{pipelineState === "running" ? "Running server pipeline…" : pipelineState === "complete" ? "Pipeline complete ✓" : canUsePaidFeatures ? "Run API pipeline →" : "Run public demo →"}</button>
           </div>
 

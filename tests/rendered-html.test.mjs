@@ -19,7 +19,8 @@ test("server-renders the complete 3VE.4 platform landing", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(html, /<html lang="en">/);
-  assert.match(html, /<title>3VE\.4 — unified programmatic operations platform<\/title>/);
+  assert.match(html, /<title>3VE\.4 — unified AdTech control plane<\/title>/);
+  assert.doesNotMatch(html, /programmatic operations/i);
   assert.match(html, /See why traffic was rejected/);
   assert.match(html, /Run free sample audit/);
   assert.match(html, /Upload a small sample/);
@@ -52,7 +53,8 @@ test("server-renders the unified interactive platform console", async () => {
   const response = await render("/platform");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>3VE\.4 Platform Console — unified AdTech operations demo<\/title>/);
+  assert.match(html, /<title>3VE\.4 Platform Console — unified AdTech control plane<\/title>/);
+  assert.doesNotMatch(html, /programmatic operations/i);
   assert.match(html, /Unified campaign control/);
   assert.match(html, /Live decision pipeline/);
   assert.match(html, /Run public demo/);

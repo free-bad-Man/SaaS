@@ -4,7 +4,7 @@ import "./globals.css";
 import "./cursor-theme.css";
 import "./platform/platform.css";
 
-const title = "3VE.4 — unified programmatic operations platform";
+const title = "3VE.4 — unified AdTech control plane";
 const description = "Traffic ingestion, postbacks, IVT control, attribution, CPA/ROAS analytics, spend optimization, and DSP connectors in one explainable AdTech platform.";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       type: "website",
       locale: "en_US",
-      images: [{ url: imageUrl, width: 1536, height: 1024, alt: "3VE.4 — one control plane for programmatic operations" }],
+      images: [{ url: imageUrl, width: 1536, height: 1024, alt: "3VE.4 — one control plane for AdTech" }],
     },
     twitter: {
       card: "summary_large_image",

@@ -51,7 +51,7 @@ export default function Home() {
       <section className="hero shell">
         <div className="hero-glow" aria-hidden="true" />
         <div className="hero-copy">
-          <p className="eyebrow"><span className="eyebrow-dot" /> PROGRAMMATIC OPERATIONS PLATFORM</p>
+          <p className="eyebrow"><span className="eyebrow-dot" /> ADTECH CONTROL PLANE</p>
           <h1>See why traffic was rejected.<br />And what it cost you.</h1>
           <p className="lead">3VE.4 combines explainable traffic-quality evidence with CPA and ROAS, turning advertising logs into reproducible watch, pause, and scale decisions.</p>
           <div className="hero-actions">
@@ -140,7 +140,7 @@ export default function Home() {
 
       <section className="faq shell"><div><p className="section-label">FAQ</p><h2>Before<br />we connect</h2></div><div className="faq-list"><details open><summary>Does 3VE.4 replace the DSP?</summary><p>No. It is an independent control layer above traffic, conversion, and buying systems. Existing platforms keep delivering media while 3VE.4 normalizes data and coordinates decisions.</p></details><details><summary>Can the platform start without write access?</summary><p>Yes. The first rollout uses read-only data and shadow-mode decisions. API actions are enabled only after the rules and attribution logic have been validated.</p></details><details><summary>Can every module be purchased separately?</summary><p>Yes. Every module has a standalone scope, deliverable, and acceptance criteria. A completed module can later become part of the unified 3VE.4 platform without rebuilding it from scratch.</p></details></div></section>
 
-      <footer><div className="shell footer-inner"><div><a className="brand footer-brand" href="#top"><span className="brand-mark"><i /><i /></span><span>3VE.4</span></a><p>Unified programmatic operations control.</p></div><div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">adminez.sh ↗</a></div><span className="footer-note">3VE.4 AdTech Platform · 2026</span></div></footer>
+      <footer><div className="shell footer-inner"><div><a className="brand footer-brand" href="#top"><span className="brand-mark"><i /><i /></span><span>3VE.4</span></a><p>Unified AdTech control plane.</p></div><div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">adminez.sh ↗</a></div><span className="footer-note">3VE.4 AdTech Platform · 2026</span></div></footer>
     </main>
   );
 }
