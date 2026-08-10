@@ -5,5 +5,4 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/opt/certbot/bin/certbot renew --quiet --deploy-hook "/bin/systemctl reload nginx"
-
+ExecStart=/opt/certbot/bin/certbot renew --quiet --no-random-sleep-on-renew --deploy-hook "/bin/systemctl reload nginx"
