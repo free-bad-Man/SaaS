@@ -100,7 +100,8 @@ export async function recordUsage(database: HistoryDatabase | undefined, userId:
   }
   await database.prepare(
     `INSERT INTO usage_periods (user_id, period, processed_rows, upload_bytes, run_count, updated_at) VALUES (?, ?, ?, ?, ?, ?)
-     ON CONFLICT(user_id, period) DO UPDATE SET processed_rows = processed_rows + excluded.processed_rows,
-       upload_bytes = upload_bytes + excluded.upload_bytes, run_count = run_count + excluded.run_count, updated_at = excluded.updated_at`,
+     ON CONFLICT(user_id, period) DO UPDATE SET processed_rows = usage_periods.processed_rows + excluded.processed_rows,
+       upload_bytes = usage_periods.upload_bytes + excluded.upload_bytes,
+       run_count = usage_periods.run_count + excluded.run_count, updated_at = excluded.updated_at`,
   ).bind(userId, period(), rows, uploadBytes, incrementRun ? 1 : 0, now).run();
 }
