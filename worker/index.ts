@@ -68,8 +68,7 @@ const worker = {
     const authResponse = await handleAuthApi(request, bindings);
     if (authResponse) return authResponse;
 
-    if (url.pathname === "/admin") return Response.redirect(new URL("/admin/leads", request.url), 302);
-    if (url.pathname.startsWith("/admin/") && url.pathname !== "/admin/login") {
+    if ((url.pathname === "/admin" || url.pathname.startsWith("/admin/")) && url.pathname !== "/admin/login") {
       const access = await authorizeAdminRequest(request, bindings);
       if (!access.allowed) {
         const login = new URL("/admin/login", request.url);

@@ -1,6 +1,7 @@
 import { listSampleAuditLeads } from "./leads.ts";
 import { telegramNotificationsConfigured } from "./notifications.mjs";
 import { getAdminSession } from "./auth.mjs";
+import { AdminDataError, getAdminOverview, listAdminAccounts, updateAdminAccount } from "./admin-data.ts";
 
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
@@ -31,12 +32,39 @@ export async function handleAdminApi(request, database, env = {}) {
   if (!url.pathname.startsWith("/api/admin")) return null;
   const access = await authorizeAdminRequest(request, env);
   if (!access.allowed) return json({ error: access.error, code: access.status === 401 ? "AUTH_REQUIRED" : "ADMIN_REQUIRED" }, access.status);
-  if (url.pathname !== "/api/admin/leads" || request.method !== "GET") return json({ error: "Route not found or method not allowed." }, 405);
-  const limit = Number.parseInt(url.searchParams.get("limit") ?? "100", 10);
-  const leads = await listSampleAuditLeads(database, limit);
-  return json({
-    leads,
-    viewer: { email: access.email },
-    integrations: { telegram: telegramNotificationsConfigured(env) },
-  });
+  try {
+    if (url.pathname === "/api/admin/overview" && request.method === "GET") {
+      return json({ overview: await getAdminOverview(database, env), viewer: { email: access.email, username: access.username ?? null } });
+    }
+    if (url.pathname === "/api/admin/accounts" && request.method === "GET") {
+      const limit = Number.parseInt(url.searchParams.get("limit") ?? "100", 10);
+      return json({ accounts: await listAdminAccounts(database, limit), viewer: { email: access.email, username: access.username ?? null } });
+    }
+    const accountMatch = url.pathname.match(/^\/api\/admin\/accounts\/([^/]+)$/u);
+    if (accountMatch && request.method === "PATCH") {
+      if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) return json({ error: "Content-Type must be application/json.", code: "INVALID_CONTENT_TYPE" }, 415);
+      const contentLength = Number.parseInt(request.headers.get("content-length") ?? "0", 10);
+      if (contentLength > 16_384) return json({ error: "Account update is too large.", code: "PAYLOAD_TOO_LARGE" }, 413);
+      const raw = await request.text();
+      if (new TextEncoder().encode(raw).byteLength > 16_384) return json({ error: "Account update is too large.", code: "PAYLOAD_TOO_LARGE" }, 413);
+      let body;
+      try { body = JSON.parse(raw); } catch { return json({ error: "Request body must be valid JSON.", code: "INVALID_JSON" }, 400); }
+      const account = await updateAdminAccount(database, decodeURIComponent(accountMatch[1]), body);
+      return json({ account, viewer: { email: access.email, username: access.username ?? null } });
+    }
+    if (url.pathname === "/api/admin/leads" && request.method === "GET") {
+      const limit = Number.parseInt(url.searchParams.get("limit") ?? "100", 10);
+      const leads = await listSampleAuditLeads(database, limit);
+      return json({
+        leads,
+        viewer: { email: access.email },
+        integrations: { telegram: telegramNotificationsConfigured(env) },
+      });
+    }
+    return json({ error: "Route not found or method not allowed.", code: "ADMIN_ROUTE_NOT_FOUND" }, 405);
+  } catch (error) {
+    if (error instanceof AdminDataError) return json({ error: error.message, code: error.code }, error.status);
+    console.error("Admin API failure", error);
+    return json({ error: "The admin control center could not complete this request.", code: "ADMIN_REQUEST_FAILED" }, 500);
+  }
 }

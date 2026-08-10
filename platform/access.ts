@@ -2,7 +2,8 @@ import type { HistoryDatabase } from "./history";
 import { getAdminSession } from "./auth.mjs";
 
 type Plan = "demo" | "trial" | "pro" | "enterprise";
-type Account = { userId: string; email: string; plan: Plan; status: "active" | "expired" | "suspended"; trialEndsAt: string | null; createdAt: string; updatedAt: string };
+type AccountRole = "member" | "manager";
+type Account = { userId: string; email: string; role: AccountRole; plan: Plan; status: "active" | "expired" | "suspended"; trialEndsAt: string | null; createdAt: string; updatedAt: string };
 type Usage = { processedRows: number; uploadBytes: number; runCount: number };
 
 export type PlatformAccess = {
@@ -16,7 +17,7 @@ export type PlatformAccess = {
   isLocalDevelopment: boolean;
   limits: { rowsPerRun: number; rowsPerMonth: number; uploadBytesPerMonth: number };
   usage: Usage;
-  role: "anonymous" | "member" | "admin";
+  role: "anonymous" | AccountRole | "admin";
 };
 
 type MemoryState = { accounts: Map<string, Account>; usage: Map<string, Usage> };
@@ -51,14 +52,14 @@ async function ensureAccount(database: HistoryDatabase | undefined, userId: stri
     const store = memoryState();
     const current = store.accounts.get(userId);
     if (current) return current;
-    const account: Account = { userId, email, plan: local ? "pro" : "trial", status: "active", trialEndsAt: local ? null : new Date(now.getTime() + 14 * 86400000).toISOString(), createdAt: now.toISOString(), updatedAt: now.toISOString() };
+    const account: Account = { userId, email, role: "member", plan: local ? "pro" : "trial", status: "active", trialEndsAt: local ? null : new Date(now.getTime() + 14 * 86400000).toISOString(), createdAt: now.toISOString(), updatedAt: now.toISOString() };
     store.accounts.set(userId, account);
     return account;
   }
-  const row = await database.prepare("SELECT user_id, email, plan, status, trial_ends_at, created_at, updated_at FROM accounts WHERE user_id = ?").bind(userId).first<{ user_id: string; email: string; plan: Plan; status: Account["status"]; trial_ends_at: string | null; created_at: string; updated_at: string }>();
-  if (row) return { userId: row.user_id, email: row.email, plan: row.plan, status: row.status, trialEndsAt: row.trial_ends_at, createdAt: row.created_at, updatedAt: row.updated_at };
-  const account: Account = { userId, email, plan: "trial", status: "active", trialEndsAt: new Date(now.getTime() + 14 * 86400000).toISOString(), createdAt: now.toISOString(), updatedAt: now.toISOString() };
-  await database.prepare("INSERT INTO accounts (user_id, email, plan, status, trial_ends_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(account.userId, account.email, account.plan, account.status, account.trialEndsAt, account.createdAt, account.updatedAt).run();
+  const row = await database.prepare("SELECT user_id, email, role, plan, status, trial_ends_at, created_at, updated_at FROM accounts WHERE user_id = ?").bind(userId).first<{ user_id: string; email: string; role: AccountRole; plan: Plan; status: Account["status"]; trial_ends_at: string | null; created_at: string; updated_at: string }>();
+  if (row) return { userId: row.user_id, email: row.email, role: row.role, plan: row.plan, status: row.status, trialEndsAt: row.trial_ends_at, createdAt: row.created_at, updatedAt: row.updated_at };
+  const account: Account = { userId, email, role: "member", plan: "trial", status: "active", trialEndsAt: new Date(now.getTime() + 14 * 86400000).toISOString(), createdAt: now.toISOString(), updatedAt: now.toISOString() };
+  await database.prepare("INSERT INTO accounts (user_id, email, role, plan, status, trial_ends_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(account.userId, account.email, account.role, account.plan, account.status, account.trialEndsAt, account.createdAt, account.updatedAt).run();
   return account;
 }
 
@@ -79,7 +80,7 @@ export async function getPlatformAccess(database: HistoryDatabase | undefined, r
   const account = await ensureAccount(database, viewer.userId, viewer.email, viewer.local);
   const trialExpired = account.plan === "trial" && !!account.trialEndsAt && Date.parse(account.trialEndsAt) <= Date.now();
   const status = trialExpired ? "expired" : account.status;
-  return { authenticated: true, userId: account.userId, email: account.email, plan: account.plan, status, trialEndsAt: account.trialEndsAt, canUsePaidFeatures: status === "active", isLocalDevelopment: viewer.local, limits: limits(account.plan), usage: await getUsage(database, account.userId), role: "member" };
+  return { authenticated: true, userId: account.userId, email: account.email, plan: account.plan, status, trialEndsAt: account.trialEndsAt, canUsePaidFeatures: status === "active", isLocalDevelopment: viewer.local, limits: limits(account.plan), usage: await getUsage(database, account.userId), role: account.role };
 }
 
 export function assertUsageAllowed(access: PlatformAccess, rows: number, uploadBytes = 0) {

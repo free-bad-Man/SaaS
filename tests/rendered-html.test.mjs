@@ -85,9 +85,21 @@ test("server-renders the pipeline run detail route", async () => {
 });
 
 test("redirects anonymous admin traffic to the sign-in screen", async () => {
-  const response = await render("/admin/leads");
-  assert.equal(response.status, 302);
-  assert.match(response.headers.get("location") ?? "", /\/admin\/login\?returnTo=/);
+  for (const path of ["/admin", "/admin/leads"]) {
+    const response = await render(path);
+    assert.equal(response.status, 302);
+    assert.match(response.headers.get("location") ?? "", /\/admin\/login\?returnTo=/);
+  }
+});
+
+test("server-renders the protected admin control center", async () => {
+  const response = await render("/admin", { headers: { "oai-authenticated-user-id": "owner-id", "oai-authenticated-user-email": "owner@example.com" } }, { ADMIN_EMAILS: "owner@example.com" });
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /<title>Admin Control Center — 3VE\.4<\/title>/);
+  assert.match(html, /Admin control center/);
+  assert.match(html, /Customer accounts/);
+  assert.match(html, /name="robots" content="noindex, nofollow"/);
 });
 
 test("server-renders the private admin sign-in shell", async () => {

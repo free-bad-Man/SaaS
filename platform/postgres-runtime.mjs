@@ -91,6 +91,8 @@ export async function getPostgresDatabase(connectionString) {
       pool.on("error", (error) => console.error("PostgreSQL pool error", error));
       const database = new PostgresDatabase(pool);
       for (const statement of HISTORY_SCHEMA_STATEMENTS) await pool.query(postgresSql(statement));
+      await pool.query("ALTER TABLE accounts ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'member'");
+      await pool.query("CREATE INDEX IF NOT EXISTS idx_accounts_status_plan_updated_at ON accounts(status, plan, updated_at DESC)");
       await pool.query("SELECT 1");
       return database;
     })();

@@ -17,12 +17,18 @@ export const ACCOUNTS_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS accounts (
     user_id TEXT PRIMARY KEY,
     email TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'member',
     plan TEXT NOT NULL,
     status TEXT NOT NULL,
     trial_ends_at TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   )
+`;
+
+export const ACCOUNTS_ADMIN_INDEX_SQL = `
+  CREATE INDEX IF NOT EXISTS idx_accounts_status_plan_updated_at
+  ON accounts(status, plan, updated_at DESC)
 `;
 
 export const USAGE_PERIODS_TABLE_SQL = `
@@ -131,6 +137,7 @@ export const HISTORY_SCHEMA_STATEMENTS = [
   PROJECTS_TABLE_SQL,
   PROJECTS_OWNER_INDEX_SQL,
   ACCOUNTS_TABLE_SQL,
+  ACCOUNTS_ADMIN_INDEX_SQL,
   USAGE_PERIODS_TABLE_SQL,
   API_RATE_LIMITS_TABLE_SQL,
   SAMPLE_AUDIT_LEADS_TABLE_SQL,
@@ -141,4 +148,3 @@ export const HISTORY_SCHEMA_STATEMENTS = [
   UPLOAD_JOBS_PROJECT_INDEX_SQL,
   PROJECT_POLICIES_TABLE_SQL,
 ];
-

@@ -74,7 +74,7 @@ type PipelineResult = {
 type Project = { id: string; name: string; createdAt: string; updatedAt: string };
 type PipelineRun = { id: string; projectId: string; sourceName: string; connector: string; status: string; eventCount: number; postbackCount: number; acceptedEvents: number; attributedConversions: number; shadowActions: number; createdAt: string };
 type UploadJob = { id: string; fileName: string; sizeBytes: number; status: "queued" | "processing" | "complete" | "failed"; processedRows: number; totalRows: number; errorCount: number; errors: Array<{ kind: string; row: number | null; message: string }>; runId: string | null };
-type PlatformAccess = { authenticated: boolean; email: string | null; plan: "demo" | "trial" | "pro" | "enterprise"; status: string; trialEndsAt: string | null; canUsePaidFeatures: boolean; isLocalDevelopment: boolean; role: "anonymous" | "member" | "admin"; limits: { rowsPerRun: number; rowsPerMonth: number; uploadBytesPerMonth: number }; usage: { processedRows: number; uploadBytes: number; runCount: number } };
+type PlatformAccess = { authenticated: boolean; email: string | null; plan: "demo" | "trial" | "pro" | "enterprise"; status: string; trialEndsAt: string | null; canUsePaidFeatures: boolean; isLocalDevelopment: boolean; role: "anonymous" | "member" | "manager" | "admin"; limits: { rowsPerRun: number; rowsPerMonth: number; uploadBytesPerMonth: number }; usage: { processedRows: number; uploadBytes: number; runCount: number } };
 
 export default function PlatformConsole({ embedded = false }: { embedded?: boolean }) {
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
@@ -385,7 +385,7 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
         <div className="platform-shell platform-nav">
           <Link className="platform-brand" href="/" aria-label="3VE.4 home"><span>3V</span><b>3VE.4</b></Link>
           <div className="platform-product"><i /> ADTECH CONTROL PLANE <small>{canUsePaidFeatures ? `${access?.plan.toUpperCase()} WORKSPACE` : "PUBLIC DEMO"}</small></div>
-          <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link>{access?.role === "admin" ? <Link href="/admin/leads">Admin</Link> : null}<a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
+          <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link>{access?.role === "admin" ? <Link href="/admin">Admin</Link> : null}<a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
         </div>
       </header> : null}
 

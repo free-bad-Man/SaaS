@@ -51,6 +51,52 @@ test("rejects anonymous and non-allowlisted lead-inbox requests", async () => {
   assert.equal(denied.status, 403);
 });
 
+test("serves the protected control-center overview and account directory", async () => {
+  const headers = { "oai-authenticated-user-id": "owner-id", "oai-authenticated-user-email": "owner@example.com" };
+  const overview = await fetchWorker("/api/admin/overview", { headers }, { ADMIN_EMAILS: "owner@example.com" });
+  assert.equal(overview.status, 200);
+  const overviewBody = await overview.json();
+  assert.equal(overviewBody.overview.system.persistence, "ephemeral");
+  assert.deepEqual(overviewBody.overview.metrics, { accounts: 0, projects: 0, runs: 0, leads: 0, processedRows: 0, uploadBytes: 0, usageRuns: 0 });
+
+  const accounts = await fetchWorker("/api/admin/accounts", { headers }, { ADMIN_EMAILS: "owner@example.com" });
+  assert.equal(accounts.status, 200);
+  assert.deepEqual((await accounts.json()).accounts, []);
+});
+
+test("updates customer role, plan, and status through the protected admin API", async () => {
+  const row = {
+    user_id: "customer-1", email: "buyer@example.com", role: "member", plan: "trial", status: "active",
+    trial_ends_at: "2026-08-24T00:00:00.000Z", created_at: "2026-08-10T00:00:00.000Z", updated_at: "2026-08-10T00:00:00.000Z",
+    project_count: 2, processed_rows: 1200, upload_bytes: 2048, run_count: 3,
+  };
+  const database = {
+    prepare(sql) {
+      let bound = [];
+      return {
+        bind(...values) { bound = values; return this; },
+        async all() { return { results: sql.includes("FROM accounts a") ? [row] : [] }; },
+        async first() { return null; },
+        async run() {
+          if (sql.startsWith("UPDATE accounts SET")) {
+            [row.role, row.plan, row.status, row.updated_at] = bound;
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        },
+      };
+    },
+    async batch() { return []; },
+  };
+  const headers = { "oai-authenticated-user-id": "owner-id", "oai-authenticated-user-email": "owner@example.com", "content-type": "application/json" };
+  const response = await fetchWorker("/api/admin/accounts/customer-1", { method: "PATCH", headers, body: JSON.stringify({ role: "manager", plan: "enterprise", status: "suspended" }) }, { ADMIN_EMAILS: "owner@example.com", DB: database });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.account.role, "manager");
+  assert.equal(body.account.plan, "enterprise");
+  assert.equal(body.account.status, "suspended");
+});
+
 test("creates a signed admin session that unlocks the inbox", async () => {
   const env = {
     ADMIN_USERNAME: "admin",

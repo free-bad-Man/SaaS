@@ -111,7 +111,7 @@ export default function LeadInbox() {
     <header className="admin-topbar"><div className="admin-shell admin-nav">
       <Link className="admin-brand" href="/"><span>3V</span><b>3VE.4</b></Link>
       <div className="admin-product"><i /> PRIVATE OPERATIONS <small>LEAD INBOX</small></div>
-      <div className="admin-nav-actions"><Link href="/platform">Platform</Link><button type="button" onClick={() => void signOut()}>Sign out</button></div>
+      <div className="admin-nav-actions"><Link href="/admin">Control center</Link><Link href="/platform">Platform</Link><button type="button" onClick={() => void signOut()}>Sign out</button></div>
     </div></header>
 
     <div className="admin-shell admin-content">

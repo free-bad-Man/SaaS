@@ -3,8 +3,8 @@
 import { FormEvent, useEffect, useState } from "react";
 
 function safeReturnTo() {
-  const value = new URLSearchParams(window.location.search).get("returnTo") ?? "/platform";
-  return value.startsWith("/") && !value.startsWith("//") ? value : "/platform";
+  const value = new URLSearchParams(window.location.search).get("returnTo") ?? "/admin";
+  return value.startsWith("/") && !value.startsWith("//") ? value : "/admin";
 }
 
 export default function LoginForm() {
