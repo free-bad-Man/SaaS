@@ -53,7 +53,16 @@ export async function handlePlatformApi(request, database, storage, env = {}) {
       limit: isPublicDemo ? 10 : request.method === "GET" ? 240 : 60,
     });
     if (url.pathname === "/api/platform/health" && request.method === "GET") {
-      return json({ status: "operational", version: "3ve4.pipeline.v1", modules: ["ingestion", "postbacks", "attribution", "ivt", "optimizer", "connectors"] });
+      if (database) await database.prepare("SELECT 1 AS ok").first();
+      return json({
+        status: "operational",
+        version: "3ve4.pipeline.v1",
+        modules: ["ingestion", "postbacks", "attribution", "ivt", "optimizer", "connectors"],
+        persistence: {
+          database: env.DATABASE_URL ? "postgresql" : database ? "d1" : "ephemeral",
+          uploads: env.UPLOAD_DIR ? "local-encrypted-transport" : storage ? "r2" : "ephemeral",
+        },
+      });
     }
     if (url.pathname === "/api/platform/connectors" && request.method === "GET") return json({ connectors: CONNECTORS });
     if (url.pathname === "/api/platform/access" && request.method === "GET") return json({ access: await getPlatformAccess(database, request, env) });
@@ -155,6 +164,8 @@ export async function handlePlatformApi(request, database, storage, env = {}) {
         const message = error instanceof Error ? error.message : "Upload processing failed.";
         const job = await updateUploadJob(database, id, { status: "failed", errorCount: 1, errors: [{ kind: "file", row: null, message }] });
         return json({ error: message, job }, 400);
+      } finally {
+        if (storage?.delete) await storage.delete(current.fileKey).catch((error) => console.error("Could not remove processed upload", error));
       }
     }
     const runMatch = url.pathname.match(/^\/api\/platform\/runs\/([^/]+)$/);

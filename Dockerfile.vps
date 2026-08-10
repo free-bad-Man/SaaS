@@ -19,6 +19,9 @@ ENV NODE_ENV=production \
 COPY --from=build /app/package.json /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/platform/postgres-runtime.mjs ./platform/postgres-runtime.mjs
+COPY --from=build /app/platform/local-storage.mjs ./platform/local-storage.mjs
+COPY --from=build /app/db/schema.mjs ./db/schema.mjs
 
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

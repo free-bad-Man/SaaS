@@ -20,6 +20,8 @@ interface Env {
   ADMIN_EMAIL?: string;
   ADMIN_PASSWORD_HASH?: string;
   ADMIN_SESSION_SECRET?: string;
+  DATABASE_URL?: string;
+  UPLOAD_DIR?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -32,6 +34,23 @@ interface Env {
 interface ExecutionContext {
   waitUntil(promise: Promise<unknown>): void;
   passThroughOnException(): void;
+}
+
+type VpsRuntime = {
+  getPostgresDatabase(connectionString: string): Promise<unknown>;
+  getLocalUploadStorage(root: string): unknown;
+};
+
+let vpsRuntimePromise: Promise<VpsRuntime> | null = null;
+
+async function attachVpsDataBindings(bindings: Env) {
+  if (!bindings.DATABASE_URL || bindings.DB) return;
+  if (typeof process === "undefined") return;
+  const moduleUrl = `file://${process.cwd()}/platform/postgres-runtime.mjs`;
+  vpsRuntimePromise ??= import(/* @vite-ignore */ moduleUrl) as Promise<VpsRuntime>;
+  const runtime = await vpsRuntimePromise;
+  bindings.DB = await runtime.getPostgresDatabase(bindings.DATABASE_URL);
+  if (!bindings.FILES && bindings.UPLOAD_DIR) bindings.FILES = runtime.getLocalUploadStorage(bindings.UPLOAD_DIR);
 }
 
 // Image security config. SVG sources with .svg extension auto-skip the
@@ -56,6 +75,18 @@ const worker = {
         const login = new URL("/admin/login", request.url);
         login.searchParams.set("returnTo", `${url.pathname}${url.search}`);
         return Response.redirect(login, 302);
+      }
+    }
+
+    if (url.pathname.startsWith("/api/admin/") || url.pathname.startsWith("/api/leads/") || url.pathname.startsWith("/api/platform/")) {
+      try {
+        await attachVpsDataBindings(bindings);
+      } catch (error) {
+        console.error("Persistent storage is unavailable", error);
+        return new Response(JSON.stringify({ error: "Persistent storage is temporarily unavailable.", code: "STORAGE_UNAVAILABLE" }), {
+          status: 503,
+          headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+        });
       }
     }
 

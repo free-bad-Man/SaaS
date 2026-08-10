@@ -1,4 +1,30 @@
 services:
+  db:
+    image: postgres:17-alpine
+    container_name: 3ve4-postgres
+    restart: unless-stopped
+    env_file:
+      - ${THREEVE4_ENV_FILE:-/opt/3ve4/shared/site.env}
+    volumes:
+      - /opt/3ve4/data/postgres:/var/lib/postgresql/data
+    command: ["postgres", "-c", "shared_buffers=32MB", "-c", "max_connections=20", "-c", "log_min_duration_statement=1000"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    mem_limit: 280m
+    cpus: 0.45
+    shm_size: 96mb
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
   app:
     build:
       context: .
@@ -8,14 +34,21 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: "3000"
+      UPLOAD_DIR: /data/uploads
     env_file:
       - ${THREEVE4_ENV_FILE:-/opt/3ve4/shared/site.env}
-    mem_limit: 700m
-    cpus: 0.80
+    volumes:
+      - /opt/3ve4/data/uploads:/data/uploads
+    init: true
+    mem_limit: 520m
+    cpus: 0.75
     security_opt:
       - no-new-privileges:true
     logging:

@@ -15,6 +15,7 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
   "dependencies": {
+    "pg": "8.22.0",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },

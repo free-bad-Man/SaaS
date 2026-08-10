@@ -3,6 +3,7 @@ import type { HistoryDatabase } from "./history";
 export type UploadStorage = {
   put(key: string, value: string, options?: { httpMetadata?: { contentType?: string } }): Promise<unknown>;
   get(key: string): Promise<{ text(): Promise<string> } | null>;
+  delete?(key: string): Promise<unknown>;
 };
 
 export type UploadError = { kind: string; row: number | null; message: string };
