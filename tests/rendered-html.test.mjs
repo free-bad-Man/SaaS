@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render(pathname = "/") {
+async function render(pathname = "/", init = {}, env = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
   return worker.fetch(
-    new Request(`https://3ve4.example${pathname}`, { headers: { accept: "text/html", host: "3ve4.example", "x-forwarded-host": "3ve4.example", "x-forwarded-proto": "https" } }),
-    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    new Request(`https://3ve4.example${pathname}`, { ...init, headers: { accept: "text/html", host: "3ve4.example", "x-forwarded-host": "3ve4.example", "x-forwarded-proto": "https", ...(init.headers ?? {}) } }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) }, ...env },
     { waitUntil() {}, passThroughOnException() {} },
   );
 }
@@ -84,13 +84,19 @@ test("server-renders the pipeline run detail route", async () => {
   assert.match(html, /Loading pipeline result/);
 });
 
-test("server-renders the private lead inbox shell", async () => {
+test("redirects anonymous admin traffic to the sign-in screen", async () => {
   const response = await render("/admin/leads");
+  assert.equal(response.status, 302);
+  assert.match(response.headers.get("location") ?? "", /\/admin\/login\?returnTo=/);
+});
+
+test("server-renders the private admin sign-in shell", async () => {
+  const response = await render("/admin/login");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>Lead Inbox — 3VE\.4<\/title>/);
-  assert.match(html, /Sample-audit leads/);
-  assert.match(html, /PRIVATE OPERATIONS/);
+  assert.match(html, /<title>Admin Sign In — 3VE\.4<\/title>/);
+  assert.match(html, /Operator access/);
+  assert.match(html, /PRIVATE CONTROL PLANE/);
   assert.match(html, /name="robots" content="noindex, nofollow"/);
 });
 

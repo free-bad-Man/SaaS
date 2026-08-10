@@ -102,17 +102,22 @@ export default function LeadInbox() {
     URL.revokeObjectURL(url);
   }
 
+  async function signOut() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.replace("/admin/login");
+  }
+
   return <main className="admin-page">
     <header className="admin-topbar"><div className="admin-shell admin-nav">
       <Link className="admin-brand" href="/"><span>3V</span><b>3VE.4</b></Link>
       <div className="admin-product"><i /> PRIVATE OPERATIONS <small>LEAD INBOX</small></div>
-      <div className="admin-nav-actions"><Link href="/platform">Platform</Link><a href="/signout-with-chatgpt?return_to=%2F">Sign out</a></div>
+      <div className="admin-nav-actions"><Link href="/platform">Platform</Link><button type="button" onClick={() => void signOut()}>Sign out</button></div>
     </div></header>
 
     <div className="admin-shell admin-content">
       <section className="admin-heading"><div><p>COMMERCIAL WORKSPACE</p><h1>Sample-audit leads</h1><span>Every contact and aggregate result in one protected queue. Raw customer files are never stored here.</span></div><div className="admin-heading-actions"><span className={telegram ? "integration-on" : "integration-off"}><i /> Telegram {telegram ? "connected" : "not configured"}</span><button type="button" onClick={() => { setLoading(true); setError(null); void refresh(); }} disabled={loading}>{loading ? "Refreshing…" : "Refresh"}</button></div></section>
 
-      {error ? <section className="admin-error"><b>{errorCode === "AUTH_REQUIRED" ? "Authentication required" : "Inbox unavailable"}</b><p>{error}</p>{errorCode === "AUTH_REQUIRED" ? <a href="/signin-with-chatgpt?return_to=%2Fadmin%2Fleads">Sign in with ChatGPT →</a> : null}</section> : <>
+      {error ? <section className="admin-error"><b>{errorCode === "AUTH_REQUIRED" ? "Authentication required" : "Inbox unavailable"}</b><p>{error}</p>{errorCode === "AUTH_REQUIRED" ? <a href="/admin/login?returnTo=%2Fadmin%2Fleads">Sign in →</a> : null}</section> : <>
         <section className="admin-metrics" aria-label="Lead metrics">
           <article><span>Total leads</span><strong>{leads.length}</strong><small>latest 100 submissions</small></article>
           <article><span>Received today</span><strong>{receivedToday}</strong><small>UTC reporting day</small></article>

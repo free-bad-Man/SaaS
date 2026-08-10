@@ -1,4 +1,5 @@
 import type { HistoryDatabase } from "./history";
+import { getAdminSession } from "./auth.mjs";
 
 type Plan = "demo" | "trial" | "pro" | "enterprise";
 type Account = { userId: string; email: string; plan: Plan; status: "active" | "expired" | "suspended"; trialEndsAt: string | null; createdAt: string; updatedAt: string };
@@ -15,6 +16,7 @@ export type PlatformAccess = {
   isLocalDevelopment: boolean;
   limits: { rowsPerRun: number; rowsPerMonth: number; uploadBytesPerMonth: number };
   usage: Usage;
+  role: "anonymous" | "member" | "admin";
 };
 
 type MemoryState = { accounts: Map<string, Account>; usage: Map<string, Usage> };
@@ -66,13 +68,18 @@ async function getUsage(database: HistoryDatabase | undefined, userId: string): 
   return row ? { processedRows: row.processed_rows, uploadBytes: row.upload_bytes, runCount: row.run_count } : { processedRows: 0, uploadBytes: 0, runCount: 0 };
 }
 
-export async function getPlatformAccess(database: HistoryDatabase | undefined, request: Request): Promise<PlatformAccess> {
+export async function getPlatformAccess(database: HistoryDatabase | undefined, request: Request, env: Record<string, unknown> = {}): Promise<PlatformAccess> {
+  const admin = await getAdminSession(request, env);
+  if (admin) {
+    const userId = `admin:${admin.username}`;
+    return { authenticated: true, userId, email: admin.email, plan: "enterprise", status: "active", trialEndsAt: null, canUsePaidFeatures: true, isLocalDevelopment: false, limits: limits("enterprise"), usage: await getUsage(database, userId), role: "admin" };
+  }
   const viewer = identity(request);
-  if (!viewer) return { authenticated: false, userId: null, email: null, plan: "demo", status: "demo", trialEndsAt: null, canUsePaidFeatures: false, isLocalDevelopment: false, limits: limits("demo"), usage: { processedRows: 0, uploadBytes: 0, runCount: 0 } };
+  if (!viewer) return { authenticated: false, userId: null, email: null, plan: "demo", status: "demo", trialEndsAt: null, canUsePaidFeatures: false, isLocalDevelopment: false, limits: limits("demo"), usage: { processedRows: 0, uploadBytes: 0, runCount: 0 }, role: "anonymous" };
   const account = await ensureAccount(database, viewer.userId, viewer.email, viewer.local);
   const trialExpired = account.plan === "trial" && !!account.trialEndsAt && Date.parse(account.trialEndsAt) <= Date.now();
   const status = trialExpired ? "expired" : account.status;
-  return { authenticated: true, userId: account.userId, email: account.email, plan: account.plan, status, trialEndsAt: account.trialEndsAt, canUsePaidFeatures: status === "active", isLocalDevelopment: viewer.local, limits: limits(account.plan), usage: await getUsage(database, account.userId) };
+  return { authenticated: true, userId: account.userId, email: account.email, plan: account.plan, status, trialEndsAt: account.trialEndsAt, canUsePaidFeatures: status === "active", isLocalDevelopment: viewer.local, limits: limits(account.plan), usage: await getUsage(database, account.userId), role: "member" };
 }
 
 export function assertUsageAllowed(access: PlatformAccess, rows: number, uploadBytes = 0) {

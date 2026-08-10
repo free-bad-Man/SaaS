@@ -12,6 +12,8 @@ services:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: "3000"
+    env_file:
+      - ${THREEVE4_ENV_FILE:-/opt/3ve4/shared/site.env}
     mem_limit: 700m
     cpus: 0.80
     security_opt:

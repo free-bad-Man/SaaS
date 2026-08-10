@@ -42,7 +42,7 @@ function uploadErrors(result) {
   ];
 }
 
-export async function handlePlatformApi(request, database, storage) {
+export async function handlePlatformApi(request, database, storage, env = {}) {
   const url = new URL(request.url);
   if (!url.pathname.startsWith("/api/platform")) return null;
 
@@ -56,10 +56,10 @@ export async function handlePlatformApi(request, database, storage) {
       return json({ status: "operational", version: "3ve4.pipeline.v1", modules: ["ingestion", "postbacks", "attribution", "ivt", "optimizer", "connectors"] });
     }
     if (url.pathname === "/api/platform/connectors" && request.method === "GET") return json({ connectors: CONNECTORS });
-    if (url.pathname === "/api/platform/access" && request.method === "GET") return json({ access: await getPlatformAccess(database, request) });
+    if (url.pathname === "/api/platform/access" && request.method === "GET") return json({ access: await getPlatformAccess(database, request, env) });
     if (url.pathname === "/api/platform/demo" && request.method === "POST") return json({ ...runPlatformPipeline(PUBLIC_DEMO_PAYLOAD), demo: true });
 
-    const access = await getPlatformAccess(database, request);
+    const access = await getPlatformAccess(database, request, env);
     if (!access.canUsePaidFeatures || !access.userId) {
       return json({ error: access.authenticated ? "An active plan is required." : "Sign in to use real data.", code: access.authenticated ? "PLAN_REQUIRED" : "AUTH_REQUIRED", access }, access.authenticated ? 402 : 401);
     }
