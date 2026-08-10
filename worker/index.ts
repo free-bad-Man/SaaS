@@ -72,6 +72,8 @@ const worker = {
       const access = await authorizeAdminRequest(request, bindings);
       if (!access.allowed) {
         const login = new URL("/admin/login", request.url);
+        const forwardedProtocol = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().toLowerCase();
+        if (forwardedProtocol === "https" || forwardedProtocol === "http") login.protocol = `${forwardedProtocol}:`;
         login.searchParams.set("returnTo", `${url.pathname}${url.search}`);
         return Response.redirect(login, 302);
       }

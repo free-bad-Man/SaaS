@@ -88,7 +88,7 @@ test("redirects anonymous admin traffic to the sign-in screen", async () => {
   for (const path of ["/admin", "/admin/leads"]) {
     const response = await render(path);
     assert.equal(response.status, 302);
-    assert.match(response.headers.get("location") ?? "", /\/admin\/login\?returnTo=/);
+    assert.match(response.headers.get("location") ?? "", /^https:\/\/3ve4\.example\/admin\/login\?returnTo=/);
   }
 });
 
