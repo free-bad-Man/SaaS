@@ -1,5 +1,6 @@
 import type { HistoryDatabase } from "./history";
 import { getAdminSession } from "./auth.mjs";
+import { getCustomerSession } from "./customer-auth.mjs";
 
 type Plan = "demo" | "trial" | "pro" | "enterprise";
 type AccountRole = "member" | "manager";
@@ -13,6 +14,7 @@ export type PlatformAccess = {
   plan: Plan;
   status: "demo" | "active" | "expired" | "suspended";
   trialEndsAt: string | null;
+  mustChangePassword: boolean;
   canUsePaidFeatures: boolean;
   isLocalDevelopment: boolean;
   limits: { rowsPerRun: number; rowsPerMonth: number; uploadBytesPerMonth: number };
@@ -73,14 +75,20 @@ export async function getPlatformAccess(database: HistoryDatabase | undefined, r
   const admin = await getAdminSession(request, env);
   if (admin) {
     const userId = `admin:${admin.username}`;
-    return { authenticated: true, userId, email: admin.email, plan: "enterprise", status: "active", trialEndsAt: null, canUsePaidFeatures: true, isLocalDevelopment: false, limits: limits("enterprise"), usage: await getUsage(database, userId), role: "admin" };
+    return { authenticated: true, userId, email: admin.email, plan: "enterprise", status: "active", trialEndsAt: null, mustChangePassword: false, canUsePaidFeatures: true, isLocalDevelopment: false, limits: limits("enterprise"), usage: await getUsage(database, userId), role: "admin" };
+  }
+  const customer = await getCustomerSession(request, database, env);
+  if (customer) {
+    const trialExpired = customer.plan === "trial" && !!customer.trialEndsAt && Date.parse(customer.trialEndsAt) <= Date.now();
+    const status = trialExpired ? "expired" : customer.status;
+    return { authenticated: true, userId: customer.userId, email: customer.email, plan: customer.plan, status, trialEndsAt: customer.trialEndsAt, mustChangePassword: customer.mustChangePassword, canUsePaidFeatures: status === "active" && !customer.mustChangePassword, isLocalDevelopment: false, limits: limits(customer.plan), usage: await getUsage(database, customer.userId), role: customer.role };
   }
   const viewer = identity(request);
-  if (!viewer) return { authenticated: false, userId: null, email: null, plan: "demo", status: "demo", trialEndsAt: null, canUsePaidFeatures: false, isLocalDevelopment: false, limits: limits("demo"), usage: { processedRows: 0, uploadBytes: 0, runCount: 0 }, role: "anonymous" };
+  if (!viewer) return { authenticated: false, userId: null, email: null, plan: "demo", status: "demo", trialEndsAt: null, mustChangePassword: false, canUsePaidFeatures: false, isLocalDevelopment: false, limits: limits("demo"), usage: { processedRows: 0, uploadBytes: 0, runCount: 0 }, role: "anonymous" };
   const account = await ensureAccount(database, viewer.userId, viewer.email, viewer.local);
   const trialExpired = account.plan === "trial" && !!account.trialEndsAt && Date.parse(account.trialEndsAt) <= Date.now();
   const status = trialExpired ? "expired" : account.status;
-  return { authenticated: true, userId: account.userId, email: account.email, plan: account.plan, status, trialEndsAt: account.trialEndsAt, canUsePaidFeatures: status === "active", isLocalDevelopment: viewer.local, limits: limits(account.plan), usage: await getUsage(database, account.userId), role: account.role };
+  return { authenticated: true, userId: account.userId, email: account.email, plan: account.plan, status, trialEndsAt: account.trialEndsAt, mustChangePassword: false, canUsePaidFeatures: status === "active", isLocalDevelopment: viewer.local, limits: limits(account.plan), usage: await getUsage(database, account.userId), role: account.role };
 }
 
 export function assertUsageAllowed(access: PlatformAccess, rows: number, uploadBytes = 0) {

@@ -70,7 +70,8 @@ export async function handlePlatformApi(request, database, storage, env = {}) {
 
     const access = await getPlatformAccess(database, request, env);
     if (!access.canUsePaidFeatures || !access.userId) {
-      return json({ error: access.authenticated ? "An active plan is required." : "Sign in to use real data.", code: access.authenticated ? "PLAN_REQUIRED" : "AUTH_REQUIRED", access }, access.authenticated ? 402 : 401);
+      const passwordChangeRequired = access.authenticated && access.mustChangePassword;
+      return json({ error: passwordChangeRequired ? "Change your temporary password before using customer data." : access.authenticated ? "An active plan is required." : "Sign in to use real data.", code: passwordChangeRequired ? "PASSWORD_CHANGE_REQUIRED" : access.authenticated ? "PLAN_REQUIRED" : "AUTH_REQUIRED", access }, passwordChangeRequired ? 403 : access.authenticated ? 402 : 401);
     }
     const ownerUserId = access.userId;
 

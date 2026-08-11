@@ -74,7 +74,7 @@ type PipelineResult = {
 type Project = { id: string; name: string; createdAt: string; updatedAt: string };
 type PipelineRun = { id: string; projectId: string; sourceName: string; connector: string; status: string; eventCount: number; postbackCount: number; acceptedEvents: number; attributedConversions: number; shadowActions: number; createdAt: string };
 type UploadJob = { id: string; fileName: string; sizeBytes: number; status: "queued" | "processing" | "complete" | "failed"; processedRows: number; totalRows: number; errorCount: number; errors: Array<{ kind: string; row: number | null; message: string }>; runId: string | null };
-type PlatformAccess = { authenticated: boolean; email: string | null; plan: "demo" | "trial" | "pro" | "enterprise"; status: string; trialEndsAt: string | null; canUsePaidFeatures: boolean; isLocalDevelopment: boolean; role: "anonymous" | "member" | "manager" | "admin"; limits: { rowsPerRun: number; rowsPerMonth: number; uploadBytesPerMonth: number }; usage: { processedRows: number; uploadBytes: number; runCount: number } };
+type PlatformAccess = { authenticated: boolean; email: string | null; plan: "demo" | "trial" | "pro" | "enterprise"; status: string; trialEndsAt: string | null; mustChangePassword: boolean; canUsePaidFeatures: boolean; isLocalDevelopment: boolean; role: "anonymous" | "member" | "manager" | "admin"; limits: { rowsPerRun: number; rowsPerMonth: number; uploadBytesPerMonth: number }; usage: { processedRows: number; uploadBytes: number; runCount: number } };
 
 export default function PlatformConsole({ embedded = false }: { embedded?: boolean }) {
   const [activeTab, setActiveTab] = useState<Tab>("Overview");
@@ -153,6 +153,10 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
         const accessBody = await accessResponse.json() as { access?: PlatformAccess };
         if (!accessResponse.ok || !accessBody.access) throw new Error("Access state could not be loaded.");
         if (!active) return;
+        if (accessBody.access.mustChangePassword) {
+          window.location.replace("/account/security?returnTo=%2Fplatform");
+          return;
+        }
         setAccess(accessBody.access);
         if (!accessBody.access.canUsePaidFeatures) {
           setHistoryState("ready");
@@ -377,6 +381,11 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
     URL.revokeObjectURL(url);
   }
 
+  async function customerSignOut() {
+    await fetch("/api/customer-auth/logout", { method: "POST" });
+    window.location.replace("/platform");
+  }
+
   const Root = embedded ? "section" : "main";
 
   return (
@@ -385,7 +394,7 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
         <div className="platform-shell platform-nav">
           <Link className="platform-brand" href="/" aria-label="3VE.4 home"><span>3V</span><b>3VE.4</b></Link>
           <div className="platform-product"><i /> ADTECH CONTROL PLANE <small>{canUsePaidFeatures ? `${access?.plan.toUpperCase()} WORKSPACE` : "PUBLIC DEMO"}</small></div>
-          <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link>{access?.role === "admin" ? <Link href="/admin">Admin</Link> : null}<a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
+          <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link>{access?.role === "admin" ? <Link href="/admin">Admin</Link> : null}{access?.role === "anonymous" ? <Link href="/login?returnTo=%2Fplatform">Sign in</Link> : null}{access && (access.role === "member" || access.role === "manager") ? <button type="button" onClick={() => void customerSignOut()}>Sign out</button> : null}<a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
         </div>
       </header> : null}
 

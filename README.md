@@ -1,6 +1,6 @@
 # 3VE.4 AdTech Platform
 
-A commercial landing page and browser-based product demo spanning traffic ingestion, postbacks, IVT control, attribution, CPA/ROAS analytics, spend optimization, and DSP connectors. IVT Guard remains available as a standalone platform module.
+A commercial landing page and working customer platform spanning traffic ingestion, postbacks, IVT control, attribution, CPA/ROAS analytics, spend optimization, and DSP connectors. IVT Guard remains available as a standalone platform module. The private product includes invite-only customer accounts, isolated projects, usage limits, signed sessions, and an operator control center.
 
 ## Local development
 
@@ -17,4 +17,4 @@ Production validation:
 npm test
 ```
 
-The site does not collect personal data or connect to advertising accounts. The primary contact actions open adminez.sh. All metrics shown in the demo are synthetic and match the reproducible sample included with the project.
+The public demo is synthetic and does not connect to advertising accounts. Invited customer workspaces retain account email, password hashes, project metadata, usage totals, policies, and aggregate run results. Raw uploaded files are removed after processing. The primary contact actions open adminez.sh.

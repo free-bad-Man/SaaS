@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { SAMPLE_RECORDS } from "../lib/audit-engine.mjs";
-import { createPasswordHash } from "../platform/auth.mjs";
+import { createPasswordHash, verifyPassword } from "../platform/auth.mjs";
 
 async function fetchWorker(pathname, init = {}, env = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -95,6 +95,58 @@ test("updates customer role, plan, and status through the protected admin API", 
   assert.equal(body.account.role, "manager");
   assert.equal(body.account.plan, "enterprise");
   assert.equal(body.account.status, "suspended");
+});
+
+test("issues invite-only customer access without storing the temporary password", async () => {
+  const accounts = [];
+  const credentials = [];
+  const database = {
+    prepare(sql) {
+      let bound = [];
+      return {
+        bind(...values) { bound = values; return this; },
+        async first() {
+          if (sql.startsWith("SELECT account_user_id FROM customer_credentials WHERE email_normalized")) return credentials.find((item) => item.email_normalized === bound[0]) ?? null;
+          if (sql.startsWith("SELECT user_id FROM accounts WHERE LOWER(email)")) return accounts.find((item) => item.email.toLowerCase() === bound[0]) ?? null;
+          return null;
+        },
+        async all() {
+          if (!sql.includes("FROM accounts a")) return { results: [] };
+          return { results: accounts.map((account) => {
+            const credential = credentials.find((item) => item.account_user_id === account.user_id);
+            return { ...account, project_count: 0, processed_rows: 0, upload_bytes: 0, run_count: 0, has_credentials: Boolean(credential), must_change_password: credential?.must_change_password ?? 0, last_login_at: credential?.last_login_at ?? null };
+          }) };
+        },
+        async run() {
+          if (sql.startsWith("INSERT INTO accounts")) {
+            accounts.push({ user_id: bound[0], email: bound[1], role: bound[2], plan: bound[3], status: "active", trial_ends_at: bound[4], created_at: bound[5], updated_at: bound[6] });
+            return { changes: 1 };
+          }
+          if (sql.startsWith("INSERT INTO customer_credentials")) {
+            credentials.push({ account_user_id: bound[0], email_normalized: bound[1], password_hash: bound[2], must_change_password: 1, session_version: 1, last_login_at: null, created_at: bound[3], updated_at: bound[4] });
+            return { changes: 1 };
+          }
+          return { changes: 0 };
+        },
+      };
+    },
+    async batch(statements) { return Promise.all(statements.map((statement) => statement.run())); },
+  };
+  const headers = { "oai-authenticated-user-id": "owner-id", "oai-authenticated-user-email": "owner@example.com", "content-type": "application/json" };
+  const response = await fetchWorker("/api/admin/accounts", { method: "POST", headers, body: JSON.stringify({ email: "Pilot@Example.com", role: "manager", plan: "trial" }) }, { ADMIN_EMAILS: "owner@example.com", DB: database });
+  assert.equal(response.status, 201);
+  const body = await response.json();
+  assert.equal(body.account.email, "pilot@example.com");
+  assert.equal(body.account.role, "manager");
+  assert.equal(body.account.hasCredentials, true);
+  assert.equal(body.account.mustChangePassword, true);
+  assert.match(body.temporaryPassword, /^3V!.+a9$/);
+  assert.equal(credentials[0].password_hash.includes(body.temporaryPassword), false);
+  assert.equal(await verifyPassword(body.temporaryPassword, credentials[0].password_hash), true);
+
+  const duplicate = await fetchWorker("/api/admin/accounts", { method: "POST", headers, body: JSON.stringify({ email: "pilot@example.com" }) }, { ADMIN_EMAILS: "owner@example.com", DB: database });
+  assert.equal(duplicate.status, 409);
+  assert.equal((await duplicate.json()).code, "ACCOUNT_EXISTS");
 });
 
 test("creates a signed admin session that unlocks the inbox", async () => {

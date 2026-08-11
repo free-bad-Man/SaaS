@@ -31,6 +31,25 @@ export const ACCOUNTS_ADMIN_INDEX_SQL = `
   ON accounts(status, plan, updated_at DESC)
 `;
 
+export const CUSTOMER_CREDENTIALS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS customer_credentials (
+    account_user_id TEXT PRIMARY KEY,
+    email_normalized TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    must_change_password INTEGER NOT NULL DEFAULT 1,
+    session_version INTEGER NOT NULL DEFAULT 1,
+    last_login_at TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (account_user_id) REFERENCES accounts(user_id) ON DELETE CASCADE
+  )
+`;
+
+export const CUSTOMER_CREDENTIALS_EMAIL_INDEX_SQL = `
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_customer_credentials_email_normalized
+  ON customer_credentials(email_normalized)
+`;
+
 export const USAGE_PERIODS_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS usage_periods (
     user_id TEXT NOT NULL,
@@ -138,6 +157,8 @@ export const HISTORY_SCHEMA_STATEMENTS = [
   PROJECTS_OWNER_INDEX_SQL,
   ACCOUNTS_TABLE_SQL,
   ACCOUNTS_ADMIN_INDEX_SQL,
+  CUSTOMER_CREDENTIALS_TABLE_SQL,
+  CUSTOMER_CREDENTIALS_EMAIL_INDEX_SQL,
   USAGE_PERIODS_TABLE_SQL,
   API_RATE_LIMITS_TABLE_SQL,
   SAMPLE_AUDIT_LEADS_TABLE_SQL,

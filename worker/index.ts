@@ -6,6 +6,7 @@ import { handleLeadApi } from "../platform/lead-api.mjs";
 import { handleAdminApi } from "../platform/admin-api.mjs";
 import { authorizeAdminRequest } from "../platform/admin-api.mjs";
 import { handleAuthApi } from "../platform/auth.mjs";
+import { getCustomerSession, handleCustomerAuthApi } from "../platform/customer-auth.mjs";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
@@ -79,7 +80,7 @@ const worker = {
       }
     }
 
-    if (url.pathname.startsWith("/api/admin/") || url.pathname.startsWith("/api/leads/") || url.pathname.startsWith("/api/platform/")) {
+    if (url.pathname.startsWith("/api/admin/") || url.pathname.startsWith("/api/leads/") || url.pathname.startsWith("/api/platform/") || url.pathname.startsWith("/api/customer-auth/") || url.pathname.startsWith("/account/")) {
       try {
         await attachVpsDataBindings(bindings);
       } catch (error) {
@@ -88,6 +89,20 @@ const worker = {
           status: 503,
           headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
         });
+      }
+    }
+
+    const customerAuthResponse = await handleCustomerAuthApi(request, bindings.DB, bindings);
+    if (customerAuthResponse) return customerAuthResponse;
+
+    if (url.pathname.startsWith("/account/")) {
+      const session = await getCustomerSession(request, bindings.DB, bindings);
+      if (!session) {
+        const login = new URL("/login", request.url);
+        const forwardedProtocol = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().toLowerCase();
+        if (forwardedProtocol === "https" || forwardedProtocol === "http") login.protocol = `${forwardedProtocol}:`;
+        login.searchParams.set("returnTo", `${url.pathname}${url.search}`);
+        return Response.redirect(login, 302);
       }
     }
 

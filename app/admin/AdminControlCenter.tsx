@@ -16,6 +16,9 @@ type AdminAccount = {
   processedRows: number;
   uploadBytes: number;
   runCount: number;
+  hasCredentials: boolean;
+  mustChangePassword: boolean;
+  lastLoginAt: string | null;
 };
 
 type RecentRun = {
@@ -70,6 +73,13 @@ export default function AdminControlCenter() {
   const [error, setError] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<AdminAccount["role"]>("member");
+  const [invitePlan, setInvitePlan] = useState<AdminAccount["plan"]>("trial");
+  const [inviteState, setInviteState] = useState<"idle" | "creating">("idle");
+  const [credential, setCredential] = useState<{ email: string; password: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -126,6 +136,54 @@ export default function AdminControlCenter() {
     }
   }
 
+  async function createInvite() {
+    setInviteState("creating");
+    setError(null);
+    setCredential(null);
+    try {
+      const response = await fetch("/api/admin/accounts", {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify({ email: inviteEmail, role: inviteRole, plan: invitePlan }),
+      });
+      const body = await response.json() as ApiResponse<{ account?: AdminAccount; temporaryPassword?: string }>;
+      if (!response.ok || !body.account || !body.temporaryPassword) throw new Error(body.error ?? "Customer access could not be created.");
+      setAccounts((current) => [body.account as AdminAccount, ...current.filter((item) => item.userId !== body.account?.userId)]);
+      setCredential({ email: body.account.email, password: body.temporaryPassword });
+      setInviteEmail(""); setInviteRole("member"); setInvitePlan("trial"); setInviteOpen(false); setCopied(false);
+      setOverview((current) => current ? { ...current, metrics: { ...current.metrics, accounts: current.metrics.accounts + 1 }, accountHealth: { ...current.accountHealth, active: current.accountHealth.active + 1, trial: current.accountHealth.trial + (body.account?.plan === "trial" ? 1 : 0) } } : current);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Customer access could not be created.");
+    } finally {
+      setInviteState("idle");
+    }
+  }
+
+  async function resetPassword(account: AdminAccount) {
+    if (!window.confirm(`Issue a new temporary password for ${account.email}? Every current customer session will be revoked.`)) return;
+    setSavingId(account.userId);
+    setError(null);
+    try {
+      const response = await fetch(`/api/admin/accounts/${encodeURIComponent(account.userId)}/reset-password`, { method: "POST", headers: { accept: "application/json" } });
+      const body = await response.json() as ApiResponse<{ account?: AdminAccount; temporaryPassword?: string }>;
+      if (!response.ok || !body.account || !body.temporaryPassword) throw new Error(body.error ?? "Temporary password could not be issued.");
+      setAccounts((current) => current.map((item) => item.userId === account.userId ? body.account as AdminAccount : item));
+      setCredential({ email: body.account.email, password: body.temporaryPassword });
+      setCopied(false);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Temporary password could not be issued.");
+    } finally {
+      setSavingId(null);
+    }
+  }
+
+  async function copyCredential() {
+    if (!credential) return;
+    const message = `3VE.4 customer access\nSign in: ${window.location.origin}/login\nEmail: ${credential.email}\nTemporary password: ${credential.password}\n\nYou will be asked to create a private password on first sign-in.`;
+    await navigator.clipboard.writeText(message);
+    setCopied(true);
+  }
+
   async function signOut() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.replace("/admin/login");
@@ -166,8 +224,10 @@ export default function AdminControlCenter() {
         <article className="control-panel recent-leads"><header><div><span>COMMERCIAL SIGNALS</span><h2>Latest leads</h2></div><Link href="/admin/leads">Open inbox →</Link></header><div className="lead-pulse-list">{overview?.recentLeads.length ? overview.recentLeads.map((lead) => <Link href="/admin/leads" key={lead.id}><span>{(lead.company || lead.email).slice(0, 2).toUpperCase()}</span><div><b>{lead.company || lead.email}</b><small>{formatNumber(lead.recordCount)} rows · {reviewRate(lead).toFixed(0)}% review</small></div><time>{formatDate(lead.createdAt)}</time></Link>) : <p className="control-empty">No sample-audit leads yet.</p>}</div></article>
       </section>
 
-      <section className="control-panel accounts-panel" id="accounts"><header><div><span>ACCESS MANAGEMENT</span><h2>Customer accounts</h2><p>Change commercial access without editing environment variables or restarting the service.</p></div><div className="account-legend"><span><i /> Member</span><span><i /> Manager</span></div></header>
-        <div className="accounts-scroll"><div className="accounts-table accounts-head"><span>Identity</span><span>Role</span><span>Plan</span><span>Status</span><span>Usage</span><span>Updated</span><span /></div>{accounts.length ? accounts.map((account) => <div className="accounts-table account-row" key={account.userId}><div><b>{account.email || "No email"}</b><small>{account.userId}</small></div><select aria-label={`Role for ${account.email}`} value={account.role} onChange={(event) => editAccount(account.userId, "role", event.target.value)}><option value="member">Member</option><option value="manager">Manager</option></select><select aria-label={`Plan for ${account.email}`} value={account.plan} onChange={(event) => editAccount(account.userId, "plan", event.target.value)}><option value="trial">Trial</option><option value="pro">Pro</option><option value="enterprise">Enterprise</option></select><select aria-label={`Status for ${account.email}`} className={`status-${account.status}`} value={account.status} onChange={(event) => editAccount(account.userId, "status", event.target.value)}><option value="active">Active</option><option value="expired">Expired</option><option value="suspended">Suspended</option></select><div className="account-usage"><b>{formatNumber(account.processedRows)} rows</b><small>{account.projectCount} projects · {account.runCount} runs · {formatBytes(account.uploadBytes)}</small></div><time>{formatDate(account.updatedAt)}</time><button type="button" disabled={savingId === account.userId} onClick={() => void saveAccount(account)}>{savingId === account.userId ? "Saving…" : savedId === account.userId ? "Saved ✓" : "Save"}</button></div>) : <div className="accounts-empty"><span>0</span><div><b>No customer accounts yet</b><p>The first authenticated customer receives a 14-day trial and appears here automatically. Your system-owner session is intentionally stored separately.</p></div></div>}</div>
+      <section className="control-panel accounts-panel" id="accounts"><header><div><span>ACCESS MANAGEMENT</span><h2>Customer accounts</h2><p>Issue invite-only access, change commercial limits, or revoke a customer immediately.</p></div><div className="account-head-actions"><div className="account-legend"><span><i /> Member</span><span><i /> Manager</span></div><button type="button" onClick={() => setInviteOpen((current) => !current)}>{inviteOpen ? "Close" : "Invite customer +"}</button></div></header>
+        {inviteOpen ? <div className="invite-form"><label><span>WORK EMAIL</span><input type="email" value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} placeholder="buyer@company.com" /></label><label><span>ROLE</span><select value={inviteRole} onChange={(event) => setInviteRole(event.target.value as AdminAccount["role"])}><option value="member">Member</option><option value="manager">Manager</option></select></label><label><span>PLAN</span><select value={invitePlan} onChange={(event) => setInvitePlan(event.target.value as AdminAccount["plan"])}><option value="trial">14-day trial</option><option value="pro">Pro</option><option value="enterprise">Enterprise</option></select></label><button type="button" disabled={inviteState === "creating" || !inviteEmail} onClick={() => void createInvite()}>{inviteState === "creating" ? "Creating access…" : "Create secure access →"}</button></div> : null}
+        {credential ? <div className="credential-issued"><div><span>ONE-TIME CREDENTIAL</span><b>{credential.email}</b><code>{credential.password}</code><small>Copy it now. Only the password hash is stored, so this value cannot be reopened later.</small></div><div><button type="button" onClick={() => void copyCredential()}>{copied ? "Copied ✓" : "Copy invitation"}</button><button type="button" onClick={() => setCredential(null)}>Dismiss</button></div></div> : null}
+        <div className="accounts-scroll"><div className="accounts-table accounts-head"><span>Identity</span><span>Role</span><span>Plan</span><span>Status</span><span>Usage</span><span>Access</span><span>Actions</span></div>{accounts.length ? accounts.map((account) => <div className="accounts-table account-row" key={account.userId}><div><b>{account.email || "No email"}</b><small>{account.userId}</small></div><select aria-label={`Role for ${account.email}`} value={account.role} onChange={(event) => editAccount(account.userId, "role", event.target.value)}><option value="member">Member</option><option value="manager">Manager</option></select><select aria-label={`Plan for ${account.email}`} value={account.plan} onChange={(event) => editAccount(account.userId, "plan", event.target.value)}><option value="trial">Trial</option><option value="pro">Pro</option><option value="enterprise">Enterprise</option></select><select aria-label={`Status for ${account.email}`} className={`status-${account.status}`} value={account.status} onChange={(event) => editAccount(account.userId, "status", event.target.value)}><option value="active">Active</option><option value="expired">Expired</option><option value="suspended">Suspended</option></select><div className="account-usage"><b>{formatNumber(account.processedRows)} rows</b><small>{account.projectCount} projects · {account.runCount} runs · {formatBytes(account.uploadBytes)}</small></div><div className="account-access-state"><b className={account.hasCredentials ? "access-ready" : "access-missing"}>{account.hasCredentials ? account.mustChangePassword ? "Invite pending" : "Secured" : "No login"}</b><small>{account.lastLoginAt ? `Last login ${formatDate(account.lastLoginAt)}` : "Never signed in"}</small></div><div className="account-actions"><button type="button" disabled={savingId === account.userId} onClick={() => void saveAccount(account)}>{savingId === account.userId ? "Working…" : savedId === account.userId ? "Saved ✓" : "Save"}</button><button type="button" disabled={savingId === account.userId} onClick={() => void resetPassword(account)}>{account.hasCredentials ? "Reset" : "Issue login"}</button></div></div>) : <div className="accounts-empty"><span>0</span><div><b>No customer accounts yet</b><p>Invite the first pilot customer. Their temporary password is shown once, and they must replace it before real data access is unlocked.</p></div></div>}</div>
         <footer><span>Roles: managers organize a customer workspace; members use assigned services.</span><span>Plans and status control paid platform access immediately.</span></footer>
       </section>
     </div>

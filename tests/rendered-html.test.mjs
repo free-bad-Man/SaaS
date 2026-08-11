@@ -112,6 +112,16 @@ test("server-renders the private admin sign-in shell", async () => {
   assert.match(html, /name="robots" content="noindex, nofollow"/);
 });
 
+test("server-renders the invite-only customer sign-in shell", async () => {
+  const response = await render("/login");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /<title>Customer Sign In — 3VE\.4<\/title>/);
+  assert.match(html, /Continue to your control plane/);
+  assert.match(html, /Invite-only access/);
+  assert.match(html, /name="robots" content="noindex, nofollow"/);
+});
+
 test("keeps the final site free of starter preview artifacts", async () => {
   const [page, platform, lab, layout, styles, cursorTheme, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

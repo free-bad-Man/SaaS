@@ -1,5 +1,6 @@
 import type { HistoryDatabase } from "./history";
 import { listSampleAuditLeads } from "./leads";
+import { createPasswordHash } from "./auth.mjs";
 
 export type AdminAccount = {
   userId: string;
@@ -14,6 +15,9 @@ export type AdminAccount = {
   processedRows: number;
   uploadBytes: number;
   runCount: number;
+  hasCredentials: boolean;
+  mustChangePassword: boolean;
+  lastLoginAt: string | null;
 };
 
 type AccountRow = {
@@ -29,6 +33,9 @@ type AccountRow = {
   processed_rows: number;
   upload_bytes: number;
   run_count: number;
+  has_credentials: boolean | number;
+  must_change_password: boolean | number;
+  last_login_at: string | null;
 };
 
 type CountRow = { total: number };
@@ -59,6 +66,9 @@ function accountFromRow(row: AccountRow): AdminAccount {
     processedRows: Number(row.processed_rows ?? 0),
     uploadBytes: Number(row.upload_bytes ?? 0),
     runCount: Number(row.run_count ?? 0),
+    hasCredentials: Boolean(row.has_credentials),
+    mustChangePassword: Boolean(row.must_change_password),
+    lastLoginAt: row.last_login_at,
   };
 }
 
@@ -77,10 +87,85 @@ export async function listAdminAccounts(database: HistoryDatabase | undefined, r
       (SELECT COUNT(*) FROM projects p WHERE p.owner_user_id = a.user_id) AS project_count,
       (SELECT COALESCE(SUM(u.processed_rows), 0) FROM usage_periods u WHERE u.user_id = a.user_id) AS processed_rows,
       (SELECT COALESCE(SUM(u.upload_bytes), 0) FROM usage_periods u WHERE u.user_id = a.user_id) AS upload_bytes,
-      (SELECT COALESCE(SUM(u.run_count), 0) FROM usage_periods u WHERE u.user_id = a.user_id) AS run_count
+      (SELECT COALESCE(SUM(u.run_count), 0) FROM usage_periods u WHERE u.user_id = a.user_id) AS run_count,
+      EXISTS(SELECT 1 FROM customer_credentials c WHERE c.account_user_id = a.user_id) AS has_credentials,
+      COALESCE((SELECT c.must_change_password FROM customer_credentials c WHERE c.account_user_id = a.user_id), 0) AS must_change_password,
+      (SELECT c.last_login_at FROM customer_credentials c WHERE c.account_user_id = a.user_id) AS last_login_at
      FROM accounts a ORDER BY a.updated_at DESC LIMIT ?`,
   ).bind(limit).all<AccountRow>()).results ?? [];
   return rows.map(accountFromRow);
+}
+
+function normalizeEmail(value: unknown) {
+  const email = String(value ?? "").trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email)) throw new AdminDataError("Enter a valid customer email address.");
+  return email;
+}
+
+function requestedRole(value: unknown): AdminAccount["role"] {
+  const role = String(value ?? "member");
+  if (role !== "member" && role !== "manager") throw new AdminDataError("Role must be member or manager.");
+  return role;
+}
+
+function requestedPlan(value: unknown): AdminAccount["plan"] {
+  const plan = String(value ?? "trial");
+  if (plan !== "trial" && plan !== "pro" && plan !== "enterprise") throw new AdminDataError("Plan must be trial, pro, or enterprise.");
+  return plan;
+}
+
+function temporaryPassword() {
+  return `3V!${crypto.randomUUID().replaceAll("-", "")}a9`;
+}
+
+export async function createAdminAccount(database: HistoryDatabase | undefined, input: unknown) {
+  if (!database) throw new AdminDataError("Persistent account storage is unavailable.", 503, "STORAGE_UNAVAILABLE");
+  if (!input || typeof input !== "object" || Array.isArray(input)) throw new AdminDataError("A JSON customer invitation is required.");
+  const body = input as Record<string, unknown>;
+  const email = normalizeEmail(body.email);
+  const role = requestedRole(body.role);
+  const plan = requestedPlan(body.plan);
+  const existingCredential = await database.prepare("SELECT account_user_id FROM customer_credentials WHERE email_normalized = ?").bind(email).first<{ account_user_id: string }>();
+  if (existingCredential) throw new AdminDataError("This email already has customer sign-in access.", 409, "ACCOUNT_EXISTS");
+  const existingAccount = await database.prepare("SELECT user_id FROM accounts WHERE LOWER(email) = ?").bind(email).first<{ user_id: string }>();
+  const userId = existingAccount?.user_id ?? `customer:${crypto.randomUUID()}`;
+  const password = temporaryPassword();
+  const passwordHash = await createPasswordHash(password);
+  const now = new Date();
+  const createdAt = now.toISOString();
+  const trialEndsAt = plan === "trial" ? new Date(now.getTime() + 14 * 86400000).toISOString() : null;
+  const accountStatement = existingAccount
+    ? database.prepare("UPDATE accounts SET email = ?, role = ?, plan = ?, status = 'active', trial_ends_at = ?, updated_at = ? WHERE user_id = ?").bind(email, role, plan, trialEndsAt, createdAt, userId)
+    : database.prepare("INSERT INTO accounts (user_id, email, role, plan, status, trial_ends_at, created_at, updated_at) VALUES (?, ?, ?, ?, 'active', ?, ?, ?)").bind(userId, email, role, plan, trialEndsAt, createdAt, createdAt);
+  await database.batch([
+    accountStatement,
+    database.prepare("INSERT INTO customer_credentials (account_user_id, email_normalized, password_hash, must_change_password, session_version, last_login_at, created_at, updated_at) VALUES (?, ?, ?, 1, 1, NULL, ?, ?)")
+      .bind(userId, email, passwordHash, createdAt, createdAt),
+  ]);
+  const account = (await listAdminAccounts(database, 250)).find((item) => item.userId === userId);
+  if (!account) throw new AdminDataError("Customer account could not be reopened after creation.", 500, "ACCOUNT_CREATE_FAILED");
+  return { account, temporaryPassword: password };
+}
+
+export async function resetAdminAccountPassword(database: HistoryDatabase | undefined, userId: string) {
+  if (!database) throw new AdminDataError("Persistent account storage is unavailable.", 503, "STORAGE_UNAVAILABLE");
+  const account = await database.prepare("SELECT user_id, email FROM accounts WHERE user_id = ?").bind(userId).first<{ user_id: string; email: string }>();
+  if (!account) throw new AdminDataError("Account not found.", 404, "ACCOUNT_NOT_FOUND");
+  const email = normalizeEmail(account.email);
+  const password = temporaryPassword();
+  const passwordHash = await createPasswordHash(password);
+  const now = new Date().toISOString();
+  const credential = await database.prepare("SELECT account_user_id FROM customer_credentials WHERE account_user_id = ?").bind(userId).first<{ account_user_id: string }>();
+  if (credential) {
+    await database.prepare("UPDATE customer_credentials SET password_hash = ?, must_change_password = 1, session_version = session_version + 1, updated_at = ? WHERE account_user_id = ?")
+      .bind(passwordHash, now, userId).run();
+  } else {
+    await database.prepare("INSERT INTO customer_credentials (account_user_id, email_normalized, password_hash, must_change_password, session_version, last_login_at, created_at, updated_at) VALUES (?, ?, ?, 1, 1, NULL, ?, ?)")
+      .bind(userId, email, passwordHash, now, now).run();
+  }
+  const updatedAccount = (await listAdminAccounts(database, 250)).find((item) => item.userId === userId);
+  if (!updatedAccount) throw new AdminDataError("Account not found after password reset.", 404, "ACCOUNT_NOT_FOUND");
+  return { account: updatedAccount, temporaryPassword: password };
 }
 
 export async function updateAdminAccount(database: HistoryDatabase | undefined, userId: string, input: unknown): Promise<AdminAccount> {

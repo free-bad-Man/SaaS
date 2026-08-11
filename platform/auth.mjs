@@ -58,13 +58,13 @@ function authConfiguration(env) {
 }
 
 export async function createPasswordHash(password, salt = crypto.getRandomValues(new Uint8Array(16))) {
-  if (typeof password !== "string" || password.length < 12) throw new Error("Admin password must contain at least 12 characters.");
+  if (typeof password !== "string" || password.length < 12) throw new Error("Password must contain at least 12 characters.");
   const source = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: PASSWORD_ITERATIONS }, source, 256);
   return `pbkdf2-sha256$${PASSWORD_ITERATIONS}$${bytesToBase64Url(salt)}$${bytesToBase64Url(new Uint8Array(bits))}`;
 }
 
-async function verifyPassword(password, encoded) {
+export async function verifyPassword(password, encoded) {
   const [algorithm, iterationsText, saltText, expectedText] = String(encoded).split("$");
   const iterations = Number.parseInt(iterationsText, 10);
   if (algorithm !== "pbkdf2-sha256" || iterations < 100_000 || !saltText || !expectedText) return false;
@@ -170,4 +170,3 @@ export async function handleAuthApi(request, env = {}) {
 
   return json({ error: "Route not found or method not allowed." }, 405);
 }
-

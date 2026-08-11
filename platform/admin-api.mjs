@@ -1,7 +1,7 @@
 import { listSampleAuditLeads } from "./leads.ts";
 import { telegramNotificationsConfigured } from "./notifications.mjs";
 import { getAdminSession } from "./auth.mjs";
-import { AdminDataError, getAdminOverview, listAdminAccounts, updateAdminAccount } from "./admin-data.ts";
+import { AdminDataError, createAdminAccount, getAdminOverview, listAdminAccounts, resetAdminAccountPassword, updateAdminAccount } from "./admin-data.ts";
 
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
@@ -12,6 +12,15 @@ function json(payload, status = 200) {
 
 function values(value) {
   return new Set(String(value ?? "").split(/[\s,;]+/).map((item) => item.trim().toLowerCase()).filter(Boolean));
+}
+
+async function readAdminJson(request) {
+  if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) throw new AdminDataError("Content-Type must be application/json.", 415, "INVALID_CONTENT_TYPE");
+  const contentLength = Number.parseInt(request.headers.get("content-length") ?? "0", 10);
+  if (contentLength > 16_384) throw new AdminDataError("Admin request is too large.", 413, "PAYLOAD_TOO_LARGE");
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).byteLength > 16_384) throw new AdminDataError("Admin request is too large.", 413, "PAYLOAD_TOO_LARGE");
+  try { return JSON.parse(raw); } catch { throw new AdminDataError("Request body must be valid JSON.", 400, "INVALID_JSON"); }
 }
 
 export async function authorizeAdminRequest(request, env = {}) {
@@ -40,16 +49,18 @@ export async function handleAdminApi(request, database, env = {}) {
       const limit = Number.parseInt(url.searchParams.get("limit") ?? "100", 10);
       return json({ accounts: await listAdminAccounts(database, limit), viewer: { email: access.email, username: access.username ?? null } });
     }
+    if (url.pathname === "/api/admin/accounts" && request.method === "POST") {
+      const created = await createAdminAccount(database, await readAdminJson(request));
+      return json({ ...created, viewer: { email: access.email, username: access.username ?? null } }, 201);
+    }
+    const resetMatch = url.pathname.match(/^\/api\/admin\/accounts\/([^/]+)\/reset-password$/u);
+    if (resetMatch && request.method === "POST") {
+      const reset = await resetAdminAccountPassword(database, decodeURIComponent(resetMatch[1]));
+      return json({ ...reset, viewer: { email: access.email, username: access.username ?? null } });
+    }
     const accountMatch = url.pathname.match(/^\/api\/admin\/accounts\/([^/]+)$/u);
     if (accountMatch && request.method === "PATCH") {
-      if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) return json({ error: "Content-Type must be application/json.", code: "INVALID_CONTENT_TYPE" }, 415);
-      const contentLength = Number.parseInt(request.headers.get("content-length") ?? "0", 10);
-      if (contentLength > 16_384) return json({ error: "Account update is too large.", code: "PAYLOAD_TOO_LARGE" }, 413);
-      const raw = await request.text();
-      if (new TextEncoder().encode(raw).byteLength > 16_384) return json({ error: "Account update is too large.", code: "PAYLOAD_TOO_LARGE" }, 413);
-      let body;
-      try { body = JSON.parse(raw); } catch { return json({ error: "Request body must be valid JSON.", code: "INVALID_JSON" }, 400); }
-      const account = await updateAdminAccount(database, decodeURIComponent(accountMatch[1]), body);
+      const account = await updateAdminAccount(database, decodeURIComponent(accountMatch[1]), await readAdminJson(request));
       return json({ account, viewer: { email: access.email, username: access.username ?? null } });
     }
     if (url.pathname === "/api/admin/leads" && request.method === "GET") {
