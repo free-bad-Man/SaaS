@@ -41,6 +41,7 @@ export default function Home() {
           </a>
           <div className="nav-links">
             <Link href="/platform">Platform demo</Link>
+            <a href="#traffic-audit">Audit</a>
             <a href="#modules">Modules</a>
             <a href="#offer">Pilot</a>
           </div>
@@ -93,6 +94,31 @@ export default function Home() {
       <section className="principles" aria-label="Platform principles"><div className="shell principles-inner"><p>One event stream.<br /><strong>Every decision connected.</strong></p><div><span>Traffic ingestion</span><span>Postback attribution</span><span>IVT quality scoring</span><span>DSP buying actions</span></div></div></section>
 
       <SampleAuditLead />
+
+      <section className="paid-audit-section shell" id="traffic-audit" aria-labelledby="traffic-audit-title">
+        <div className="paid-audit-heading">
+          <div><p className="section-label">First paid engagement</p><h2 id="traffic-audit-title">Find the leak<br />before integrating.</h2></div>
+          <p>Start with a fixed-scope analysis of one real traffic source. No production write access, no automatic blocking, and no long platform commitment.</p>
+        </div>
+        <div className="paid-audit-card">
+          <div className="paid-audit-main">
+            <div className="paid-audit-kicker"><span>TRAFFIC WASTE AUDIT</span><i>3-5 BUSINESS DAYS</i></div>
+            <h3>Decision-ready evidence from 7-30 days of traffic.</h3>
+            <p>We validate the supplied log, score configured traffic-quality signals, estimate at-risk media spend when cost data is present, and return a prioritized source action plan.</p>
+            <div className="paid-audit-deliverables">
+              <span>Risk distribution</span><span>Source findings</span><span>At-risk spend</span><span>Evidence CSV</span><span>Executive PDF</span><span>Written handoff</span>
+            </div>
+          </div>
+          <aside className="paid-audit-price">
+            <span>Reference engagements</span>
+            <strong>from $750</strong>
+            <p>One source · one agreed schema · up to 10M rows</p>
+            <a className="button button-light" href="/reports/3ve4-sample-traffic-waste-audit.pdf" target="_blank" rel="noreferrer">View sample report ↗</a>
+            <a className="paid-audit-request" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request fixed scope →</a>
+          </aside>
+        </div>
+        <p className="paid-audit-note">The downloadable report uses synthetic data. Client findings are delivered only inside the agreed engagement.</p>
+      </section>
 
       <section className="dashboard-proof shell" aria-labelledby="dashboard-proof-title">
         <div className="dashboard-proof-heading">

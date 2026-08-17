@@ -39,5 +39,6 @@ yarn-error.log*
 /.wrangler/
 /outputs/
 /work/
+/tmp/
 *.tsbuildinfo
 /pnpm-lock.yaml
