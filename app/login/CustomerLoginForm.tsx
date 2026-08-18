@@ -51,11 +51,11 @@ export default function CustomerLoginForm() {
 
   const disabled = state === "checking" || state === "submitting" || state === "unconfigured";
   return <main className="client-auth-page">
-    <header className="client-auth-nav"><Link href="/"><span>3V</span><b>3VE.4</b></Link><div><i /> SECURE CUSTOMER ACCESS</div><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a pilot ↗</a></header>
+    <header className="client-auth-nav"><Link href="/"><span>V</span><b>Verdict</b></Link><div><i /> SECURE CUSTOMER ACCESS</div><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a pilot ↗</a></header>
     <section className="client-auth-shell">
       <div className="client-auth-copy"><p>PRIVATE ADTECH WORKSPACE</p><h1>Continue to your control plane.</h1><span>Open your projects, process approved datasets, review decisions, and export reproducible results.</span><div className="client-auth-proof"><span><i /> Isolated workspace</span><span><i /> Encrypted transport</span><span><i /> Metered access</span></div></div>
       <form className="client-auth-card" onSubmit={submit}>
-        <header><span>CUSTOMER SESSION</span><h2>Sign in</h2><p>Use the credentials issued by your 3VE.4 operator.</p></header>
+        <header><span>CUSTOMER SESSION</span><h2>Sign in</h2><p>Use the credentials issued by your Verdict operator.</p></header>
         <label><span>Work email</span><input type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" required disabled={disabled} /></label>
         <label><span>Password</span><input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required disabled={disabled} /></label>
         {state === "error" ? <p className="client-auth-error" role="alert">{message}</p> : null}

@@ -97,7 +97,7 @@ export default function LeadInbox() {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `3ve4-leads-${today}.csv`;
+    anchor.download = `verdict-leads-${today}.csv`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -109,7 +109,7 @@ export default function LeadInbox() {
 
   return <main className="admin-page">
     <header className="admin-topbar"><div className="admin-shell admin-nav">
-      <Link className="admin-brand" href="/"><span>3V</span><b>3VE.4</b></Link>
+      <Link className="admin-brand" href="/"><span>V</span><b>Verdict</b></Link>
       <div className="admin-product"><i /> PRIVATE OPERATIONS <small>LEAD INBOX</small></div>
       <div className="admin-nav-actions"><Link href="/admin">Control center</Link><Link href="/platform">Platform</Link><button type="button" onClick={() => void signOut()}>Sign out</button></div>
     </div></header>
@@ -138,8 +138,8 @@ export default function LeadInbox() {
           </div>
 
           <article className="lead-detail">
-            {!selected ? <div className="lead-detail-empty"><span>3V</span><h2>Select a lead</h2><p>The full aggregate sample result will appear here.</p></div> : <>
-              <header><div><span>AUDIT {selected.id.slice(0, 8).toUpperCase()}</span><h2>{selected.company || "Independent buyer"}</h2><p>Received {formatDate(selected.createdAt)} · {selected.sourceName}</p></div><a href={`mailto:${selected.email}?subject=${encodeURIComponent("Your 3VE.4 sample audit")}`}>Email lead ↗</a></header>
+            {!selected ? <div className="lead-detail-empty"><span>V</span><h2>Select a lead</h2><p>The full aggregate sample result will appear here.</p></div> : <>
+              <header><div><span>AUDIT {selected.id.slice(0, 8).toUpperCase()}</span><h2>{selected.company || "Independent buyer"}</h2><p>Received {formatDate(selected.createdAt)} · {selected.sourceName}</p></div><a href={`mailto:${selected.email}?subject=${encodeURIComponent("Your Verdict sample audit")}`}>Email lead ↗</a></header>
               <div className="lead-contact"><div><span>CONTACT</span><a href={`mailto:${selected.email}`}>{selected.email}</a></div><div><span>COMPANY</span><b>{selected.company || "Not provided"}</b></div><div><span>SUBMITTED</span><b>{formatDate(selected.createdAt, false)}</b></div></div>
               <div className="lead-score-grid"><article><span>Records</span><strong>{selected.recordCount}</strong></article><article><span>Allow</span><strong className="score-allow">{selected.allowCount}</strong></article><article><span>Watch</span><strong className="score-watch">{selected.watchCount}</strong></article><article><span>Block</span><strong className="score-block">{selected.blockCount}</strong></article><article><span>Avg risk</span><strong>{selected.averageScore}</strong></article><article><span>Review</span><strong>{reviewRate(selected).toFixed(1)}%</strong></article></div>
               <div className="lead-findings"><div className="lead-section-title"><b>Top findings</b><span>{selected.topFindings.length} detected</span></div>{selected.topFindings.length ? selected.topFindings.map((finding) => <div key={finding.code}><span><i /> {finding.title}<small>{finding.code}</small></span><b>{finding.count}</b></div>) : <p>No configured risk signals found.</p>}</div>

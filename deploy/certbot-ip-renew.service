@@ -1,5 +1,5 @@
 [Unit]
-Description=Renew the 3VE.4 short-lived IP certificate
+Description=Renew the Verdict short-lived IP certificate
 After=network-online.target
 Wants=network-online.target
 

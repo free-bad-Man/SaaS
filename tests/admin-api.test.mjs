@@ -8,7 +8,7 @@ async function fetchWorker(pathname, init = {}, env = {}) {
   workerUrl.searchParams.set("admin-test", `${process.pid}-${Date.now()}-${Math.random()}`);
   const { default: worker } = await import(workerUrl.href);
   return worker.fetch(
-    new Request(`https://3ve4.example${pathname}`, init),
+    new Request(`https://verdict.example${pathname}`, init),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) }, ...env },
     { waitUntil() {}, passThroughOnException() {} },
   );
@@ -140,7 +140,7 @@ test("issues invite-only customer access without storing the temporary password"
   assert.equal(body.account.role, "manager");
   assert.equal(body.account.hasCredentials, true);
   assert.equal(body.account.mustChangePassword, true);
-  assert.match(body.temporaryPassword, /^3V!.+a9$/);
+  assert.match(body.temporaryPassword, /^Verdict!.+a9$/);
   assert.equal(credentials[0].password_hash.includes(body.temporaryPassword), false);
   assert.equal(await verifyPassword(body.temporaryPassword, credentials[0].password_hash), true);
 
@@ -162,7 +162,7 @@ test("creates a signed admin session that unlocks the inbox", async () => {
   const login = await fetchWorker("/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ username: "admin", password: "a-secure-test-password" }) }, env);
   assert.equal(login.status, 200);
   const cookie = login.headers.get("set-cookie")?.split(";")[0] ?? "";
-  assert.match(cookie, /^3ve4_admin=/);
+  assert.match(cookie, /^verdict_admin=/);
 
   const session = await fetchWorker("/api/auth/session", { headers: { cookie } }, env);
   assert.equal(session.status, 200);

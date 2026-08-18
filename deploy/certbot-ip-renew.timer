@@ -1,5 +1,5 @@
 [Unit]
-Description=Check the 3VE.4 IP certificate twice daily
+Description=Check the Verdict IP certificate twice daily
 
 [Timer]
 OnBootSec=5m

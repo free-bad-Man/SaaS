@@ -64,7 +64,7 @@ export default function RunDetail({ runId }: { runId: string }) {
     const url = URL.createObjectURL(new Blob([createPipelineReportCsv(run.result)], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `${run.sourceName.replace(/\.[^.]+$/, "") || "3ve4-run"}-report.csv`;
+    anchor.download = `${run.sourceName.replace(/\.[^.]+$/, "") || "verdict-run"}-report.csv`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -73,7 +73,7 @@ export default function RunDetail({ runId }: { runId: string }) {
   if (state === "error" || !run) return <main className="platform-page run-detail-page"><div className="run-detail-state run-detail-error"><b>Run unavailable</b><span>The record may belong to an expired local preview session.</span><Link href="/platform">Back to platform →</Link></div></main>;
 
   return <main className="platform-page run-detail-page">
-    <header className="run-detail-nav"><div className="platform-shell"><Link className="platform-brand" href="/"><span>3V</span><b>3VE.4</b></Link><Link href="/platform">← Platform console</Link></div></header>
+    <header className="run-detail-nav"><div className="platform-shell"><Link className="platform-brand" href="/"><span>V</span><b>Verdict</b></Link><Link href="/platform">← Platform console</Link></div></header>
     <div className="platform-shell run-detail-shell">
       <section className="run-detail-heading">
         <div><p>PIPELINE RUN · {run.status.toUpperCase()}</p><h1>{run.sourceName}</h1><span>{new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "long", timeStyle: "short" })} · {run.connector.toUpperCase()} · {run.id}</span></div>

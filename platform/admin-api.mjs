@@ -6,7 +6,7 @@ import { AdminDataError, createAdminAccount, getAdminOverview, listAdminAccounts
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-3ve4-admin": "v1" },
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-verdict-admin": "v1" },
   });
 }
 

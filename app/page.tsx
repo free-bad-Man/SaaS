@@ -25,7 +25,7 @@ const deliverables = [
 ] as const;
 
 const steps = [
-  ["Connect", "We map one event source, one conversion flow, and one buying platform into the 3VE.4 data model."],
+  ["Connect", "We map one event source, one conversion flow, and one buying platform into the Verdict data model."],
   ["Measure", "The platform validates traffic, attributes outcomes, and calculates source-level CPA, ROAS, and IVT risk."],
   ["Act", "Approved rules produce a transparent optimization queue before any automated buying action is enabled."],
 ] as const;
@@ -35,9 +35,9 @@ export default function Home() {
     <main id="top">
       <header className="nav-wrap">
         <nav className="nav shell" aria-label="Primary navigation">
-          <a className="brand" href="#top" aria-label="3VE.4 — home">
+          <a className="brand" href="#top" aria-label="Verdict — home">
             <span className="brand-mark" aria-hidden="true"><i /><i /></span>
-            <span>3VE.4</span>
+            <span>Verdict</span>
           </a>
           <div className="nav-links">
             <Link href="/platform">Product</Link>
@@ -54,7 +54,7 @@ export default function Home() {
         <div className="hero-copy">
           <p className="eyebrow"><span className="eyebrow-dot" /> ADTECH CONTROL PLANE</p>
           <h1>See why traffic was rejected.<br />And what it cost you.</h1>
-          <p className="lead">3VE.4 turns advertising logs into reproducible traffic-quality, CPA, and ROAS decisions — with the reason and evidence attached to every flagged row.</p>
+          <p className="lead">Verdict turns advertising logs into reproducible traffic-quality, CPA, and ROAS decisions — with the reason and evidence attached to every flagged row.</p>
           <div className="hero-actions">
             <a className="button button-primary" href="#sample-audit">Analyze a small sample <span aria-hidden="true">→</span></a>
             <Link className="button button-secondary" href="/platform">Open platform console ↗</Link>
@@ -62,10 +62,10 @@ export default function Home() {
           <div className="hero-notes" aria-label="Platform benefits"><span><i /> OpenRTB + postbacks</span><span><i /> Explainable decisions</span><span><i /> Cloud workspace</span></div>
         </div>
 
-        <div className="product-frame" aria-label="3VE.4 control plane preview">
-          <div className="frame-toolbar"><div className="window-dots" aria-hidden="true"><i /><i /><i /></div><span>3VE.4 control plane</span><span className="frame-status"><i /> Pipeline healthy</span></div>
+        <div className="product-frame" aria-label="Verdict control plane preview">
+          <div className="frame-toolbar"><div className="window-dots" aria-hidden="true"><i /><i /><i /></div><span>Verdict control plane</span><span className="frame-status"><i /> Pipeline healthy</span></div>
           <div className="product-layout">
-            <aside className="product-sidebar" aria-hidden="true"><span className="sidebar-brand"><b>3V</b></span><span className="sidebar-active" /><span /><span /><span /></aside>
+            <aside className="product-sidebar" aria-hidden="true"><span className="sidebar-brand"><b>V</b></span><span className="sidebar-active" /><span /><span /><span /></aside>
             <div className="product-content">
               <div className="product-head"><div><span>CAMPAIGN ORCHESTRATION</span><strong>portfolio-global</strong></div><code>5 live · connectors planned</code></div>
               <div className="product-grid">
@@ -111,7 +111,7 @@ export default function Home() {
           <article className="trust-card methodology-card">
             <div className="trust-card-head"><span>METHOD / 01</span><i>REPRODUCIBLE</i></div>
             <h3>Rules that can be challenged.</h3>
-            <p>3VE.4 is not presented as a magic fraud detector. The audit normalizes agreed fields, applies named checks, and attaches the exact evidence that affected each score.</p>
+            <p>Verdict is not presented as a magic fraud detector. The audit normalizes agreed fields, applies named checks, and attaches the exact evidence that affected each score.</p>
             <ol className="method-list">
               <li><span>01</span><div><b>Validate and normalize</b><small>Schema, types, domains, identifiers, and required fields.</small></div></li>
               <li><span>02</span><div><b>Score transparent signals</b><small>Seven deterministic checks with visible weights and thresholds.</small></div></li>
@@ -155,7 +155,7 @@ export default function Home() {
             <h3>Decision-ready evidence from 7–30 days of traffic.</h3>
             <p>We validate the supplied log, score agreed traffic-quality signals, estimate at-risk spend when cost data is present, and return a prioritized action plan.</p>
             <ul><li>Up to 10M rows</li><li>Source and placement findings</li><li>Evidence CSV + executive PDF</li><li>Written handoff and recommendations</li></ul>
-            <div className="engagement-bottom"><div><strong>from $750</strong><small>one source · one agreed schema</small></div><a className="button button-secondary" href="/reports/3ve4-sample-traffic-waste-audit.pdf" target="_blank" rel="noreferrer">View sample report ↗</a></div>
+            <div className="engagement-bottom"><div><strong>from $750</strong><small>one source · one agreed schema</small></div><a className="button button-secondary" href="/reports/verdict-sample-traffic-waste-audit.pdf" target="_blank" rel="noreferrer">View sample report ↗</a></div>
           </article>
         </div>
         <div className="scope-assurance"><span><i>00</i><div><b>Free feasibility check</b><small>Send a field list or five anonymized rows. We confirm fit and scope in writing.</small></div></span><span><i>✓</i><div><b>Defined acceptance</b><small>You pay for agreed artifacts and acceptance criteria — never for a promise of guaranteed savings.</small></div></span></div>
@@ -165,7 +165,7 @@ export default function Home() {
       <section className="dashboard-proof shell" aria-labelledby="dashboard-proof-title">
         <div className="dashboard-proof-heading">
           <div><p className="section-label">Working platform</p><h2 id="dashboard-proof-title">Five working modules.<br />One connector roadmap.</h2></div>
-          <div className="dashboard-proof-copy"><p>This is the running 3VE.4 workspace, not a concept mockup. Ingestion, postbacks, IVT, attribution, and optimization operate as one decision pipeline; external DSP adapters are clearly marked as planned.</p><Link href="/platform">Open the interactive console →</Link></div>
+          <div className="dashboard-proof-copy"><p>This is the running Verdict workspace, not a concept mockup. Ingestion, postbacks, IVT, attribution, and optimization operate as one decision pipeline; external DSP adapters are clearly marked as planned.</p><Link href="/platform">Open the interactive console →</Link></div>
         </div>
         <div className="dashboard-live-frame">
           <div className="dashboard-live-label"><span><i /> PUBLIC API DEMO</span><Link href="/platform">Open full console →</Link></div>
@@ -204,11 +204,11 @@ export default function Home() {
 
       <section className="process-section" id="process"><div className="shell process-grid"><div className="process-copy"><p className="section-label light">Commercial rollout</p><h2>Connect once.<br />Improve continuously.</h2><p>The first deployment covers a complete campaign loop, not an isolated report: events enter the platform, conversions are attributed, traffic is scored, and decisions reach an approval queue.</p></div><ol className="steps">{steps.map(([title, text], index) => <li key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></div></section>
 
-      <section className="offer-section shell" id="offer"><div className="offer-card dual-offer-card"><div className="offer-main"><p className="section-label">Standalone service</p><h2>Start with one module</h2><p>Choose the immediate bottleneck: ingestion, postbacks, IVT, attribution, optimization, or a custom connector implementation.</p><strong className="standalone-price">from $1,500</strong><ul><li>Defined module boundary</li><li>One real data source</li><li>Working integration or report</li><li>Acceptance criteria and tests</li><li>Deployment documentation</li><li>Upgrade path to 3VE.4</li></ul><a className="button button-secondary module-offer-button" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a module ↗</a></div><div className="offer-price"><span>Complete platform pilot</span><strong>from $5,000</strong><p>One integrated campaign workspace from event ingestion to an explainable optimization queue.</p><ul className="platform-offer-list"><li>Ingestion + postbacks</li><li>IVT + attribution</li><li>CPA/ROAS workspace</li><li>Optimizer decision queue</li><li>One connector implementation</li><li>Handover and deployment docs</li></ul><a className="button button-light" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request platform pilot ↗</a><small>Typical first rollout · 4–6 weeks</small></div></div></section>
+      <section className="offer-section shell" id="offer"><div className="offer-card dual-offer-card"><div className="offer-main"><p className="section-label">Standalone service</p><h2>Start with one module</h2><p>Choose the immediate bottleneck: ingestion, postbacks, IVT, attribution, optimization, or a custom connector implementation.</p><strong className="standalone-price">from $1,500</strong><ul><li>Defined module boundary</li><li>One real data source</li><li>Working integration or report</li><li>Acceptance criteria and tests</li><li>Deployment documentation</li><li>Upgrade path to Verdict</li></ul><a className="button button-secondary module-offer-button" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a module ↗</a></div><div className="offer-price"><span>Complete platform pilot</span><strong>from $5,000</strong><p>One integrated campaign workspace from event ingestion to an explainable optimization queue.</p><ul className="platform-offer-list"><li>Ingestion + postbacks</li><li>IVT + attribution</li><li>CPA/ROAS workspace</li><li>Optimizer decision queue</li><li>One connector implementation</li><li>Handover and deployment docs</li></ul><a className="button button-light" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request platform pilot ↗</a><small>Typical first rollout · 4–6 weeks</small></div></div></section>
 
-      <section className="faq shell"><div><p className="section-label">FAQ</p><h2>Before<br />we connect</h2></div><div className="faq-list"><details open><summary>How can I verify the result?</summary><p>Every flagged row includes a score, reason code, and evidence value. The public browser lab exposes the same deterministic checks, and the paid scope defines the expected input and output artifacts before work begins.</p></details><details><summary>Does 3VE.4 replace the DSP?</summary><p>No. It is an independent control layer above traffic, conversion, and buying systems. Existing platforms keep delivering media while 3VE.4 normalizes data and coordinates decisions.</p></details><details><summary>Can the platform start without write access?</summary><p>Yes. The first rollout uses read-only data and shadow-mode decisions. API actions are enabled only after the rules and attribution logic have been validated.</p></details><details><summary>Can every module be purchased separately?</summary><p>Yes. Every module has a standalone scope, deliverable, and acceptance criteria. A completed module can later become part of the unified 3VE.4 platform without rebuilding it from scratch.</p></details></div></section>
+      <section className="faq shell"><div><p className="section-label">FAQ</p><h2>Before<br />we connect</h2></div><div className="faq-list"><details open><summary>How can I verify the result?</summary><p>Every flagged row includes a score, reason code, and evidence value. The public browser lab exposes the same deterministic checks, and the paid scope defines the expected input and output artifacts before work begins.</p></details><details><summary>Does Verdict replace the DSP?</summary><p>No. It is an independent control layer above traffic, conversion, and buying systems. Existing platforms keep delivering media while Verdict normalizes data and coordinates decisions.</p></details><details><summary>Can the platform start without write access?</summary><p>Yes. The first rollout uses read-only data and shadow-mode decisions. API actions are enabled only after the rules and attribution logic have been validated.</p></details><details><summary>Can every module be purchased separately?</summary><p>Yes. Every module has a standalone scope, deliverable, and acceptance criteria. A completed module can later become part of the unified Verdict platform without rebuilding it from scratch.</p></details></div></section>
 
-      <footer><div className="shell footer-inner"><div><a className="brand footer-brand" href="#top"><span className="brand-mark"><i /><i /></span><span>3VE.4</span></a><p>Unified AdTech control plane.</p></div><div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">adminez.sh ↗</a></div><span className="footer-note">3VE.4 AdTech Platform · 2026</span></div></footer>
+      <footer><div className="shell footer-inner"><div><a className="brand footer-brand" href="#top"><span className="brand-mark"><i /><i /></span><span>Verdict</span></a><p>Unified AdTech control plane.</p></div><div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">adminez.sh ↗</a></div><span className="footer-note">Verdict AdTech Platform · 2026</span></div></footer>
     </main>
   );
 }

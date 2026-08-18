@@ -20,7 +20,7 @@ export function runPlatformPipeline(input) {
   const spend = decisions.reduce((total, item) => total + item.spend, 0);
   const revenue = decisions.reduce((total, item) => total + item.revenue, 0);
   return {
-    version: "3ve4.pipeline.v1",
+    version: "verdict.pipeline.v1",
     generatedAt: new Date().toISOString(),
     policy,
     modules: {

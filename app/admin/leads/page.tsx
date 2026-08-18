@@ -5,7 +5,7 @@ import "./admin.css";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Lead Inbox — 3VE.4",
+  title: "Lead Inbox — Verdict",
   description: "Private sample-audit lead inbox.",
   robots: { index: false, follow: false },
 };

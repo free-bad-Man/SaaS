@@ -74,7 +74,7 @@ class PostgresDatabase {
   }
 }
 
-const DATABASE_KEY = Symbol.for("3ve4.postgresDatabase");
+const DATABASE_KEY = Symbol.for("verdict.postgresDatabase");
 
 export async function getPostgresDatabase(connectionString) {
   const root = globalThis;
@@ -86,7 +86,7 @@ export async function getPostgresDatabase(connectionString) {
         idleTimeoutMillis: 30_000,
         connectionTimeoutMillis: 5_000,
         statement_timeout: 30_000,
-        application_name: "3ve4-app",
+        application_name: "verdict-app",
       });
       pool.on("error", (error) => console.error("PostgreSQL pool error", error));
       const database = new PostgresDatabase(pool);

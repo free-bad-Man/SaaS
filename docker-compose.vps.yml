@@ -1,12 +1,12 @@
 services:
   db:
     image: postgres:17-alpine
-    container_name: 3ve4-postgres
+    container_name: verdict-postgres
     restart: unless-stopped
     env_file:
-      - ${THREEVE4_ENV_FILE:-/opt/3ve4/shared/site.env}
+      - ${VERDICT_ENV_FILE:-/opt/verdict/shared/site.env}
     volumes:
-      - /opt/3ve4/data/postgres:/var/lib/postgresql/data
+      - /opt/verdict/data/postgres:/var/lib/postgresql/data
     command: ["postgres", "-c", "shared_buffers=32MB", "-c", "max_connections=20", "-c", "log_min_duration_statement=1000"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
@@ -29,8 +29,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.vps
-    image: 3ve4-site:local
-    container_name: 3ve4-site
+    image: verdict-site:local
+    container_name: verdict-site
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
@@ -43,9 +43,9 @@ services:
       PORT: "3000"
       UPLOAD_DIR: /data/uploads
     env_file:
-      - ${THREEVE4_ENV_FILE:-/opt/3ve4/shared/site.env}
+      - ${VERDICT_ENV_FILE:-/opt/verdict/shared/site.env}
     volumes:
-      - /opt/3ve4/data/uploads:/data/uploads
+      - /opt/verdict/data/uploads:/data/uploads
     init: true
     mem_limit: 520m
     cpus: 0.75

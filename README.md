@@ -1,4 +1,4 @@
-# 3VE.4 AdTech Platform
+# Verdict AdTech Platform
 
 A commercial landing page and working customer platform spanning traffic ingestion, postbacks, IVT control, attribution, CPA/ROAS analytics, spend optimization, and DSP connectors. IVT Guard remains available as a standalone platform module. The private product includes invite-only customer accounts, isolated projects, usage limits, signed sessions, and an operator control center.
 

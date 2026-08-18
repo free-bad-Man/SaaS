@@ -7,7 +7,7 @@ const secret = Array.from(random(48), (byte) => byte.toString(16).padStart(2, "0
 const hash = await createPasswordHash(password);
 
 console.log("ADMIN_USERNAME=admin");
-console.log("ADMIN_EMAIL=owner@local.3ve4");
+console.log("ADMIN_EMAIL=owner@local.verdict");
 console.log(`ADMIN_PASSWORD_HASH=${hash}`);
 console.log(`ADMIN_SESSION_SECRET=${secret}`);
 console.log(`ADMIN_INITIAL_PASSWORD=${password}`);

@@ -65,7 +65,7 @@ async function fetchWorker(pathname, init, env) {
   workerUrl.searchParams.set("customer-auth-test", `${process.pid}-${Date.now()}-${Math.random()}`);
   const { default: worker } = await import(workerUrl.href);
   return worker.fetch(
-    new Request(`https://3ve4.example${pathname}`, init),
+    new Request(`https://verdict.example${pathname}`, init),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) }, ...env },
     { waitUntil() {}, passThroughOnException() {} },
   );
@@ -93,7 +93,7 @@ test("requires a one-time password change and rotates customer sessions", async 
   const loginBody = await login.json();
   assert.equal(loginBody.viewer.mustChangePassword, true);
   const oldCookie = login.headers.get("set-cookie")?.split(";")[0] ?? "";
-  assert.match(oldCookie, /^3ve4_customer=/);
+  assert.match(oldCookie, /^verdict_customer=/);
 
   const lockedAccess = await fetchWorker("/api/platform/access", { headers: { cookie: oldCookie } }, env);
   const lockedBody = await lockedAccess.json();
@@ -120,5 +120,5 @@ test("redirects anonymous account-security traffic to customer sign in", async (
   const database = new CustomerDatabase({ user_id: "none" }, { email_normalized: "none@example.com" });
   const response = await fetchWorker("/account/security", { headers: { accept: "text/html", "x-forwarded-proto": "https" } }, { DB: database, ADMIN_SESSION_SECRET: "test-session-secret-that-is-longer-than-thirty-two-characters" });
   assert.equal(response.status, 302);
-  assert.match(response.headers.get("location") ?? "", /^https:\/\/3ve4\.example\/login\?returnTo=/);
+  assert.match(response.headers.get("location") ?? "", /^https:\/\/verdict\.example\/login\?returnTo=/);
 });

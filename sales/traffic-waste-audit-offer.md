@@ -1,4 +1,4 @@
-# 3VE.4 Traffic Waste Audit
+# Verdict Traffic Waste Audit
 
 ## Commercial promise
 
@@ -47,7 +47,7 @@ The audit reports configured evidence and recommendations. It does not claim tha
 - First reference engagements: USD 500-750.
 - Standard audit after reference case: USD 1,000-1,500.
 - 50% to start, 50% on delivery.
-- The audit fee may be credited toward an approved 3VE.4 platform pilot.
+- The audit fee may be credited toward an approved Verdict platform pilot.
 
 ## Upsell path
 

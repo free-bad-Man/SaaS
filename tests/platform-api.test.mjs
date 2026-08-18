@@ -9,10 +9,10 @@ async function fetchWorker(pathname, init = {}, authenticated = true, userId = "
   const headers = new Headers(init.headers);
   if (authenticated) {
     headers.set("oai-authenticated-user-id", userId);
-    headers.set("oai-authenticated-user-email", "test@3ve4.example");
+    headers.set("oai-authenticated-user-email", "test@verdict.example");
   }
   return worker.fetch(
-    new Request(`https://3ve4.example${pathname}`, { ...init, headers }),
+    new Request(`https://verdict.example${pathname}`, { ...init, headers }),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
     { waitUntil() {}, passThroughOnException() {} },
   );
@@ -50,7 +50,7 @@ test("rate-limits repeated public demo execution", async () => {
 test("exposes module health and connector capabilities", async () => {
   const healthResponse = await fetchWorker("/api/platform/health");
   assert.equal(healthResponse.status, 200);
-  assert.equal(healthResponse.headers.get("x-3ve4-api"), "v1");
+  assert.equal(healthResponse.headers.get("x-verdict-api"), "v1");
   const health = await healthResponse.json();
   assert.equal(health.status, "operational");
   assert.deepEqual(health.modules, ["ingestion", "postbacks", "attribution", "ivt", "optimizer", "connectors"]);

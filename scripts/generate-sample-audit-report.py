@@ -12,7 +12,7 @@ from reportlab.platypus import Paragraph, Table, TableStyle
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "output" / "pdf" / "3ve4-sample-traffic-waste-audit.pdf"
+OUTPUT = ROOT / "output" / "pdf" / "verdict-sample-traffic-waste-audit.pdf"
 PUBLIC_COPY = ROOT / "public" / "reports" / OUTPUT.name
 
 PAGE_W, PAGE_H = A4
@@ -100,7 +100,7 @@ def header(c, page, section):
     c.roundRect(MARGIN, PAGE_H - MARGIN - 8, 8, 8, 2, fill=1, stroke=0)
     c.setFillColor(INK)
     c.setFont(FONTS["mono_bold"], 9)
-    c.drawString(MARGIN + 14, PAGE_H - MARGIN - 1, "3VE.4")
+    c.drawString(MARGIN + 14, PAGE_H - MARGIN - 1, "Verdict")
     c.setFillColor(MUTED_2)
     c.setFont(FONTS["mono"], 6.5)
     c.drawRightString(PAGE_W - MARGIN, PAGE_H - MARGIN - 1, section.upper())
@@ -109,7 +109,7 @@ def header(c, page, section):
     c.setFillColor(MUTED_2)
     c.setFont(FONTS["mono"], 6.2)
     c.drawString(MARGIN, 11 * mm, "SYNTHETIC SAMPLE - NO CLIENT DATA")
-    c.drawRightString(PAGE_W - MARGIN, 11 * mm, f"3VE.4 / {page:02d}")
+    c.drawRightString(PAGE_W - MARGIN, 11 * mm, f"Verdict / {page:02d}")
 
 
 def metric_card(c, x, y, w, label, value, note, accent=VIOLET):
@@ -263,14 +263,14 @@ def page_five(c):
     top = PAGE_H - 42 * mm
     p(c, "FIXED-SCOPE ENGAGEMENT", MARGIN, top, 100 * mm, S["label"])
     p(c, "From raw log to decision-ready report.", MARGIN, top - 10 * mm, 164 * mm, S["h2"])
-    p(c, "The Traffic Waste Audit is the lowest-risk way to validate 3VE.4 against real data before any live integration or automated buying action.", MARGIN, top - 27 * mm, 160 * mm, style("engagement-lead", 10, 15, MUTED))
+    p(c, "The Traffic Waste Audit is the lowest-risk way to validate Verdict against real data before any live integration or automated buying action.", MARGIN, top - 27 * mm, 160 * mm, style("engagement-lead", 10, 15, MUTED))
 
     y = top - 112 * mm
     gap = 5 * mm
     col_w = (PAGE_W - 2 * MARGIN - gap) / 2
     sections = [
         ("CLIENT PROVIDES", ["7-30 days of JSON, JSONL or CSV", "One traffic source or buying platform", "Optional spend and conversion fields", "No production credentials required"]),
-        ("3VE.4 DELIVERS", ["ALLOW / WATCH / BLOCK evidence", "Source-level waste estimate", "CSV evidence export", "Executive PDF and action plan"]),
+        ("Verdict DELIVERS", ["ALLOW / WATCH / BLOCK evidence", "Source-level waste estimate", "CSV evidence export", "Executive PDF and action plan"]),
     ]
     for idx, (title, items) in enumerate(sections):
         x = MARGIN + idx * (col_w + gap)
@@ -297,8 +297,8 @@ def build():
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     PUBLIC_COPY.parent.mkdir(parents=True, exist_ok=True)
     c = canvas.Canvas(str(OUTPUT), pagesize=A4, pageCompression=1)
-    c.setTitle("3VE.4 Sample Traffic Waste Audit")
-    c.setAuthor("3VE.4")
+    c.setTitle("Verdict Sample Traffic Waste Audit")
+    c.setAuthor("Verdict")
     c.setSubject("Synthetic sample of a fixed-scope traffic-quality audit")
     for render in (page_one, page_two, page_three, page_four, page_five):
         render(c)

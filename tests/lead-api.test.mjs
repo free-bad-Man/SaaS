@@ -7,7 +7,7 @@ async function fetchWorker(body, headers = {}) {
   workerUrl.searchParams.set("lead-test", `${process.pid}-${Date.now()}-${Math.random()}`);
   const { default: worker } = await import(workerUrl.href);
   return worker.fetch(
-    new Request("https://3ve4.example/api/leads/sample-audit", {
+    new Request("https://verdict.example/api/leads/sample-audit", {
       method: "POST",
       headers: { "content-type": "application/json", ...headers },
       body: JSON.stringify(body),

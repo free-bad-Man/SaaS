@@ -11,7 +11,7 @@ export function buildLeadTelegramMessage(lead, adminUrl = "") {
   const reviewRate = lead.recordCount ? ((reviewCount / lead.recordCount) * 100).toFixed(1) : "0.0";
   const findings = lead.topFindings.slice(0, 3).map((item) => `• ${item.title}: ${item.count}`).join("\n") || "• No configured risk signals";
   return [
-    "3VE.4 · New sample-audit lead",
+    "Verdict · New sample-audit lead",
     "",
     `Contact: ${lead.email}`,
     `Company: ${lead.company || "Not provided"}`,

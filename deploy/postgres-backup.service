@@ -1,11 +1,11 @@
 [Unit]
-Description=Back up the 3VE.4 PostgreSQL database
+Description=Back up the Verdict PostgreSQL database
 After=docker.service
 Requires=docker.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/3ve4-postgres-backup
+ExecStart=/usr/local/sbin/verdict-postgres-backup
 Nice=10
 IOSchedulingClass=best-effort
 IOSchedulingPriority=7

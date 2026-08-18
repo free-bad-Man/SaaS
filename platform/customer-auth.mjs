@@ -1,7 +1,7 @@
 import { createPasswordHash, verifyPassword } from "./auth.mjs";
 import { enforceRateLimit, RateLimitError } from "./rate-limit.ts";
 
-const COOKIE_NAME = "3ve4_customer";
+const COOKIE_NAME = "verdict_customer";
 const SESSION_TTL_SECONDS = 24 * 60 * 60;
 const MAX_BODY_BYTES = 16 * 1024;
 const encoder = new TextEncoder();
@@ -76,7 +76,7 @@ function clearCookieHeader(request) {
 }
 
 function json(payload, status = 200, headers = {}) {
-  return new Response(JSON.stringify(payload), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-3ve4-customer-auth": "v1", ...headers } });
+  return new Response(JSON.stringify(payload), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-verdict-customer-auth": "v1", ...headers } });
 }
 
 function normalizeEmail(value) {
@@ -115,10 +115,10 @@ class CustomerAuthError extends Error {
   }
 }
 
-const DUMMY_HASH_KEY = Symbol.for("3ve4.customerAuthDummyHash");
+const DUMMY_HASH_KEY = Symbol.for("verdict.customerAuthDummyHash");
 function dummyPasswordHash() {
   const root = globalThis;
-  root[DUMMY_HASH_KEY] ??= createPasswordHash("3VE4-invalid-customer-password!9");
+  root[DUMMY_HASH_KEY] ??= createPasswordHash("VERDICT-invalid-customer-password!9");
   return root[DUMMY_HASH_KEY];
 }
 

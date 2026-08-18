@@ -7,19 +7,19 @@ async function render(pathname = "/", init = {}, env = {}) {
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
   return worker.fetch(
-    new Request(`https://3ve4.example${pathname}`, { ...init, headers: { accept: "text/html", host: "3ve4.example", "x-forwarded-host": "3ve4.example", "x-forwarded-proto": "https", ...(init.headers ?? {}) } }),
+    new Request(`https://verdict.example${pathname}`, { ...init, headers: { accept: "text/html", host: "verdict.example", "x-forwarded-host": "verdict.example", "x-forwarded-proto": "https", ...(init.headers ?? {}) } }),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) }, ...env },
     { waitUntil() {}, passThroughOnException() {} },
   );
 }
 
-test("server-renders the complete 3VE.4 platform landing", async () => {
+test("server-renders the complete Verdict platform landing", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(html, /<html lang="en">/);
-  assert.match(html, /<title>3VE\.4 — unified AdTech control plane<\/title>/);
+  assert.match(html, /<title>Verdict — unified AdTech control plane<\/title>/);
   assert.doesNotMatch(html, /programmatic operations/i);
   assert.match(html, /See why traffic was rejected/);
   assert.match(html, /Run free sample audit/);
@@ -38,7 +38,7 @@ test("server-renders the complete 3VE.4 platform landing", async () => {
   assert.match(html, /Postback Hub/);
   assert.match(html, /IVT Guard/);
   assert.match(html, /Five working modules/);
-  assert.match(html, /Interactive 3VE\.4 platform dashboard/);
+  assert.match(html, /Interactive Verdict platform dashboard/);
   assert.match(html, /PUBLIC API DEMO/);
   assert.doesNotMatch(html, /Cloud or on-premise|connectors healthy|SYNCED · 4 platforms/i);
   assert.doesNotMatch(html, /platform-dashboard\.png/);
@@ -53,7 +53,8 @@ test("server-renders the complete 3VE.4 platform landing", async () => {
   assert.match(html, /https:\/\/github\.com\/free-bad-Man\/SaaS/);
   assert.match(html, /href="\/platform"/);
   assert.match(html, /href="\/lab"/);
-  assert.match(html, /https:\/\/3ve4\.example\/og\.png/);
+  assert.match(html, /https:\/\/verdict\.example\/og\.png/);
+  assert.doesNotMatch(html, /3VE\.4|3VE4|3ve4|\b3V\b/);
   assert.doesNotMatch(html, /Your site is taking shape|react-loading-skeleton|codex-preview/i);
 });
 
@@ -61,7 +62,7 @@ test("server-renders the unified interactive platform console", async () => {
   const response = await render("/platform");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>3VE\.4 Platform Console — unified AdTech control plane<\/title>/);
+  assert.match(html, /<title>Verdict Platform Console — unified AdTech control plane<\/title>/);
   assert.doesNotMatch(html, /programmatic operations/i);
   assert.match(html, /Unified campaign control/);
   assert.match(html, /Live decision pipeline/);
@@ -88,7 +89,7 @@ test("server-renders the pipeline run detail route", async () => {
   const response = await render("/platform/run/sample-run");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>Pipeline run .* 3VE\.4 Platform<\/title>/);
+  assert.match(html, /<title>Pipeline run .* Verdict Platform<\/title>/);
   assert.match(html, /Loading pipeline result/);
 });
 
@@ -96,7 +97,7 @@ test("redirects anonymous admin traffic to the sign-in screen", async () => {
   for (const path of ["/admin", "/admin/leads"]) {
     const response = await render(path);
     assert.equal(response.status, 302);
-    assert.match(response.headers.get("location") ?? "", /^https:\/\/3ve4\.example\/admin\/login\?returnTo=/);
+    assert.match(response.headers.get("location") ?? "", /^https:\/\/verdict\.example\/admin\/login\?returnTo=/);
   }
 });
 
@@ -104,7 +105,7 @@ test("server-renders the protected admin control center", async () => {
   const response = await render("/admin", { headers: { "oai-authenticated-user-id": "owner-id", "oai-authenticated-user-email": "owner@example.com" } }, { ADMIN_EMAILS: "owner@example.com" });
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>Admin Control Center — 3VE\.4<\/title>/);
+  assert.match(html, /<title>Admin Control Center — Verdict<\/title>/);
   assert.match(html, /Admin control center/);
   assert.match(html, /Customer accounts/);
   assert.match(html, /name="robots" content="noindex, nofollow"/);
@@ -114,7 +115,7 @@ test("server-renders the private admin sign-in shell", async () => {
   const response = await render("/admin/login");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>Admin Sign In — 3VE\.4<\/title>/);
+  assert.match(html, /<title>Admin Sign In — Verdict<\/title>/);
   assert.match(html, /Operator access/);
   assert.match(html, /PRIVATE CONTROL PLANE/);
   assert.match(html, /name="robots" content="noindex, nofollow"/);
@@ -124,7 +125,7 @@ test("server-renders the invite-only customer sign-in shell", async () => {
   const response = await render("/login");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>Customer Sign In — 3VE\.4<\/title>/);
+  assert.match(html, /<title>Customer Sign In — Verdict<\/title>/);
   assert.match(html, /Continue to your control plane/);
   assert.match(html, /Invite-only access/);
   assert.match(html, /name="robots" content="noindex, nofollow"/);
@@ -140,7 +141,7 @@ test("keeps the final site free of starter preview artifacts", async () => {
     readFile(new URL("../app/cursor-theme.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
-  assert.match(page, /3VE\.4/);
+  assert.match(page, /Verdict/);
   assert.match(page, /Standalone service/);
   assert.match(platform, /summarizePlatform/);
   assert.match(platform, /Run API pipeline/);

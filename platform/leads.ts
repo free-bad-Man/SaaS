@@ -31,7 +31,7 @@ type SampleAuditLeadRow = {
   created_at: string;
 };
 
-const MEMORY_KEY = Symbol.for("3ve4.sampleAuditLeads");
+const MEMORY_KEY = Symbol.for("verdict.sampleAuditLeads");
 
 function memoryStore(): SampleAuditLead[] {
   const root = globalThis as typeof globalThis & { [MEMORY_KEY]?: SampleAuditLead[] };

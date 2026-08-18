@@ -376,7 +376,7 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "3ve4-pipeline-report.csv";
+    anchor.download = "verdict-pipeline-report.csv";
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -389,10 +389,10 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
   const Root = embedded ? "section" : "main";
 
   return (
-    <Root className={`platform-page${embedded ? " platform-embed" : ""}`} aria-label={embedded ? "Interactive 3VE.4 platform dashboard" : undefined}>
+    <Root className={`platform-page${embedded ? " platform-embed" : ""}`} aria-label={embedded ? "Interactive Verdict platform dashboard" : undefined}>
       {!embedded ? <header className="platform-topbar">
         <div className="platform-shell platform-nav">
-          <Link className="platform-brand" href="/" aria-label="3VE.4 home"><span>3V</span><b>3VE.4</b></Link>
+          <Link className="platform-brand" href="/" aria-label="Verdict home"><span>V</span><b>Verdict</b></Link>
           <div className="platform-product"><i /> ADTECH CONTROL PLANE <small>{canUsePaidFeatures ? `${access?.plan.toUpperCase()} WORKSPACE` : "PUBLIC DEMO"}</small></div>
           <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link>{access?.role === "admin" ? <Link href="/admin">Admin</Link> : null}{access?.role === "anonymous" ? <Link href="/login?returnTo=%2Fplatform">Sign in</Link> : null}{access && (access.role === "member" || access.role === "manager") ? <button type="button" onClick={() => void customerSignOut()}>Sign out</button> : null}<a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
         </div>

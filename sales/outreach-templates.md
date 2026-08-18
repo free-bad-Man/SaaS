@@ -1,4 +1,4 @@
-# 3VE.4 outreach templates
+# Verdict outreach templates
 
 ## Short first message
 
@@ -6,7 +6,7 @@ Subject: Evidence-based traffic waste audit for [Company]
 
 Hi [Name],
 
-We built 3VE.4 to turn advertising logs into an explainable list of sources to keep, review, or pause. The first engagement is a fixed-scope Traffic Waste Audit: one source, 7-30 days of data, source-level evidence, estimated at-risk spend, and a written action plan. No production write access is required.
+We built Verdict to turn advertising logs into an explainable list of sources to keep, review, or pause. The first engagement is a fixed-scope Traffic Waste Audit: one source, 7-30 days of data, source-level evidence, estimated at-risk spend, and a written action plan. No production write access is required.
 
 I can send a synthetic sample report and a one-page data checklist. If the format fits your workflow, we can scope the audit asynchronously from a small schema sample.
 
@@ -19,7 +19,7 @@ Subject: White-label traffic-quality evidence for your media accounts
 
 Hi [Name],
 
-3VE.4 combines traffic-quality signals with spend, conversions, CPA, and ROAS. For agencies and networks, we start with one client/source and deliver a ranked placement report with reproducible evidence rather than a black-box fraud percentage.
+Verdict combines traffic-quality signals with spend, conversions, CPA, and ROAS. For agencies and networks, we start with one client/source and deliver a ranked placement report with reproducible evidence rather than a black-box fraud percentage.
 
 The audit takes 3-5 business days after valid data is received and can lead into a white-label shadow-mode workspace if the findings are useful. No call is required to begin: a field list and small anonymized sample are enough for an async feasibility check.
 

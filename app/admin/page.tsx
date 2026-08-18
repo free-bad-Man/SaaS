@@ -6,8 +6,8 @@ import "./control.css";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Admin Control Center — 3VE.4",
-  description: "Private 3VE.4 operations and account management.",
+  title: "Admin Control Center — Verdict",
+  description: "Private Verdict operations and account management.",
   robots: { index: false, follow: false },
 };
 

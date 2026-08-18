@@ -5,7 +5,7 @@ import { PLATFORM_PAYLOAD } from "./fixtures/platform-payload.mjs";
 
 test("runs the complete modular pipeline from raw events to connector actions", () => {
   const result = runPlatformPipeline(PLATFORM_PAYLOAD);
-  assert.equal(result.version, "3ve4.pipeline.v1");
+  assert.equal(result.version, "verdict.pipeline.v1");
   assert.deepEqual(result.modules.ingestion, { accepted: 4, rejected: 1, duplicates: 1 });
   assert.deepEqual(result.modules.postbacks, { accepted: 2, rejected: 0, duplicates: 1 });
   assert.equal(result.modules.attribution.attributed, 2);

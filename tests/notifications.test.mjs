@@ -18,11 +18,11 @@ const lead = {
 };
 
 test("builds a concise Telegram lead notification without raw traffic data", () => {
-  const message = buildLeadTelegramMessage(lead, "https://3ve4.example");
+  const message = buildLeadTelegramMessage(lead, "https://verdict.example");
   assert.match(message, /buyer@example\.com/);
   assert.match(message, /Review: 40\.0%/);
   assert.match(message, /Domain mismatch: 12/);
-  assert.match(message, /https:\/\/3ve4\.example\/admin\/leads/);
+  assert.match(message, /https:\/\/verdict\.example\/admin\/leads/);
   assert.doesNotMatch(message, /sourceFingerprint|raw/i);
 });
 
@@ -30,7 +30,7 @@ test("sends Telegram notifications only when credentials are configured", async 
   assert.deepEqual(await sendLeadTelegramNotification({}, lead, async () => { throw new Error("must not fetch"); }), { sent: false, reason: "not_configured" });
   let request;
   const result = await sendLeadTelegramNotification(
-    { TELEGRAM_BOT_TOKEN: "123:token", TELEGRAM_CHAT_ID: "456", PUBLIC_SITE_URL: "https://3ve4.example" },
+    { TELEGRAM_BOT_TOKEN: "123:token", TELEGRAM_CHAT_ID: "456", PUBLIC_SITE_URL: "https://verdict.example" },
     lead,
     async (url, init) => { request = { url, init }; return new Response(JSON.stringify({ ok: true }), { status: 200 }); },
   );

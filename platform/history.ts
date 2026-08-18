@@ -59,7 +59,7 @@ type RunRow = {
 };
 
 type MemoryStore = { projects: ProjectRecord[]; runs: PipelineRunRecord[] };
-const MEMORY_KEY = Symbol.for("3ve4.platform.history");
+const MEMORY_KEY = Symbol.for("verdict.platform.history");
 
 function memoryStore(): MemoryStore {
   const root = globalThis as typeof globalThis & { [MEMORY_KEY]?: MemoryStore };

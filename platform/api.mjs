@@ -14,7 +14,7 @@ const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 function json(payload, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-3ve4-api": "v1", ...extraHeaders },
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-verdict-api": "v1", ...extraHeaders },
   });
 }
 
@@ -56,7 +56,7 @@ export async function handlePlatformApi(request, database, storage, env = {}) {
       if (database) await database.prepare("SELECT 1 AS ok").first();
       return json({
         status: "operational",
-        version: "3ve4.pipeline.v1",
+        version: "verdict.pipeline.v1",
         modules: ["ingestion", "postbacks", "attribution", "ivt", "optimizer", "connectors"],
         persistence: {
           database: env.DATABASE_URL ? "postgresql" : database ? "d1" : "ephemeral",

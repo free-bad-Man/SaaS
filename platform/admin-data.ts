@@ -115,7 +115,7 @@ function requestedPlan(value: unknown): AdminAccount["plan"] {
 }
 
 function temporaryPassword() {
-  return `3V!${crypto.randomUUID().replaceAll("-", "")}a9`;
+  return `Verdict!${crypto.randomUUID().replaceAll("-", "")}a9`;
 }
 
 export async function createAdminAccount(database: HistoryDatabase | undefined, input: unknown) {

@@ -6,7 +6,7 @@ import test from "node:test";
 import { createLocalUploadStorage } from "../platform/local-storage.mjs";
 
 test("stores uploads atomically and removes raw input after processing", async () => {
-  const root = await mkdtemp(join(tmpdir(), "3ve4-uploads-"));
+  const root = await mkdtemp(join(tmpdir(), "verdict-uploads-"));
   try {
     const storage = createLocalUploadStorage(root);
     await storage.put("uploads/project/job/source.json", "{\"event\":true}");

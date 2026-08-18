@@ -45,7 +45,7 @@ type UploadRow = {
 };
 
 type UploadMemory = { jobs: UploadJob[]; files: Map<string, string> };
-const MEMORY_KEY = "__3ve4PlatformUploads";
+const MEMORY_KEY = "__verdictPlatformUploads";
 
 function memoryStore(): UploadMemory {
   const root = globalThis as typeof globalThis & { [MEMORY_KEY]?: UploadMemory };

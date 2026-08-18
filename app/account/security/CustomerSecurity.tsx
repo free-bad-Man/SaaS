@@ -59,7 +59,7 @@ export default function CustomerSecurity() {
 
   const disabled = state === "checking" || state === "submitting" || state === "complete";
   return <main className="client-auth-page security-page">
-    <header className="client-auth-nav"><Link href="/"><span>3V</span><b>3VE.4</b></Link><div><i /> ACCOUNT SECURITY</div><button type="button" onClick={() => void signOut()}>Sign out</button></header>
+    <header className="client-auth-nav"><Link href="/"><span>V</span><b>Verdict</b></Link><div><i /> ACCOUNT SECURITY</div><button type="button" onClick={() => void signOut()}>Sign out</button></header>
     <section className="security-shell">
       <div className="security-summary"><p>{viewer?.mustChangePassword ? "FIRST SIGN-IN" : "CUSTOMER ACCOUNT"}</p><h1>{viewer?.mustChangePassword ? "Secure your workspace." : "Change your password."}</h1><span>{viewer?.mustChangePassword ? "Replace the one-time password before processing any customer data." : "Updating your password revokes every other active customer session."}</span><div><span>IDENTITY <b>{viewer?.email ?? "Checking…"}</b></span><span>ACCESS <b>{viewer ? `${viewer.plan.toUpperCase()} · ${viewer.role.toUpperCase()}` : "—"}</b></span></div></div>
       <form className="client-auth-card security-card" onSubmit={submit}>

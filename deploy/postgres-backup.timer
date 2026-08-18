@@ -1,5 +1,5 @@
 [Unit]
-Description=Create a daily 3VE.4 PostgreSQL backup
+Description=Create a daily Verdict PostgreSQL backup
 
 [Timer]
 OnCalendar=*-*-* 03:15:00 UTC

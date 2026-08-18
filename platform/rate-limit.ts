@@ -5,7 +5,7 @@ type RateLimitOptions = { scope: string; limit: number; windowMs?: number };
 type RateLimitEntry = { windowStart: number; count: number };
 type RateLimitRow = { window_start: number; request_count: number };
 
-const MEMORY_KEY = Symbol.for("3ve4.platform.rateLimits");
+const MEMORY_KEY = Symbol.for("verdict.platform.rateLimits");
 
 function memoryStore(): Map<string, RateLimitEntry> {
   const root = globalThis as typeof globalThis & { [MEMORY_KEY]?: Map<string, RateLimitEntry> };

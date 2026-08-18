@@ -1,4 +1,4 @@
-const COOKIE_NAME = "3ve4_admin";
+const COOKIE_NAME = "verdict_admin";
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const PASSWORD_ITERATIONS = 210_000;
 const encoder = new TextEncoder();
@@ -51,7 +51,7 @@ function authConfiguration(env) {
   return {
     configured: Boolean(username && passwordHash && sessionSecret.length >= 32),
     username,
-    email: envValue(env, "ADMIN_EMAIL") || `${username || "admin"}@local.3ve4`,
+    email: envValue(env, "ADMIN_EMAIL") || `${username || "admin"}@local.verdict`,
     passwordHash,
     sessionSecret,
   };
@@ -111,7 +111,7 @@ function json(payload, status = 200, headers = {}) {
   return new Response(JSON.stringify(payload), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...headers } });
 }
 
-const ATTEMPTS_KEY = Symbol.for("3ve4.adminLoginAttempts");
+const ATTEMPTS_KEY = Symbol.for("verdict.adminLoginAttempts");
 function attemptsStore() {
   const root = globalThis;
   root[ATTEMPTS_KEY] ??= new Map();

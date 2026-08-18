@@ -179,7 +179,7 @@ export default function AdminControlCenter() {
 
   async function copyCredential() {
     if (!credential) return;
-    const message = `3VE.4 customer access\nSign in: ${window.location.origin}/login\nEmail: ${credential.email}\nTemporary password: ${credential.password}\n\nYou will be asked to create a private password on first sign-in.`;
+    const message = `Verdict customer access\nSign in: ${window.location.origin}/login\nEmail: ${credential.email}\nTemporary password: ${credential.password}\n\nYou will be asked to create a private password on first sign-in.`;
     await navigator.clipboard.writeText(message);
     setCopied(true);
   }
@@ -192,7 +192,7 @@ export default function AdminControlCenter() {
   const metrics = overview?.metrics;
   return <main className="admin-page control-page">
     <header className="admin-topbar"><div className="admin-shell admin-nav">
-      <Link className="admin-brand" href="/"><span>3V</span><b>3VE.4</b></Link>
+      <Link className="admin-brand" href="/"><span>V</span><b>Verdict</b></Link>
       <div className="admin-product"><i /> PRIVATE OPERATIONS <small>CONTROL CENTER</small></div>
       <div className="admin-nav-actions"><Link className="active" href="/admin">Overview</Link><Link href="/admin/leads">Leads</Link><Link href="/platform">Platform</Link><button type="button" onClick={() => void signOut()}>Sign out</button></div>
     </div></header>

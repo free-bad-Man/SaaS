@@ -10,7 +10,7 @@ const MAX_SAMPLE_RECORDS = 1000;
 function json(payload, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-3ve4-leads": "v1", ...extraHeaders },
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-verdict-leads": "v1", ...extraHeaders },
   });
 }
 

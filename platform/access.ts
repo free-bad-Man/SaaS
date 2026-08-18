@@ -23,7 +23,7 @@ export type PlatformAccess = {
 };
 
 type MemoryState = { accounts: Map<string, Account>; usage: Map<string, Usage> };
-const MEMORY_KEY = "__3ve4PlatformAccess";
+const MEMORY_KEY = "__verdictPlatformAccess";
 
 function memoryState(): MemoryState {
   const root = globalThis as typeof globalThis & { [MEMORY_KEY]?: MemoryState };
@@ -37,7 +37,7 @@ function identity(request: Request) {
   const userId = request.headers.get("oai-authenticated-user-id");
   if (userId) return { userId, email: request.headers.get("oai-authenticated-user-email") ?? "" , local: false };
   const hostname = new URL(request.url).hostname;
-  if (hostname === "localhost" || hostname === "127.0.0.1") return { userId: "local-owner", email: "owner@local.3ve4", local: true };
+  if (hostname === "localhost" || hostname === "127.0.0.1") return { userId: "local-owner", email: "owner@local.verdict", local: true };
   return null;
 }
 

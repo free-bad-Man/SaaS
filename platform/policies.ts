@@ -13,7 +13,7 @@ type DecisionPolicy = {
   executionMode: "shadow" | "approval";
 };
 
-const MEMORY_KEY = "__3ve4ProjectPolicies";
+const MEMORY_KEY = "__verdictProjectPolicies";
 
 function memoryStore() {
   const root = globalThis as typeof globalThis & { [MEMORY_KEY]?: Map<string, DecisionPolicy> };
