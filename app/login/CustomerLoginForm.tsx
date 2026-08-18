@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import { FormEvent, useEffect, useState } from "react";
 
 type Viewer = { email: string; mustChangePassword: boolean };
@@ -51,7 +52,7 @@ export default function CustomerLoginForm() {
 
   const disabled = state === "checking" || state === "submitting" || state === "unconfigured";
   return <main className="client-auth-page">
-    <header className="client-auth-nav"><Link href="/"><span>V</span><b>Verdict</b></Link><div><i /> SECURE CUSTOMER ACCESS</div><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a pilot ↗</a></header>
+    <header className="client-auth-nav"><Link href="/"><VerdictMark /><b>Verdict</b></Link><div><i /> SECURE CUSTOMER ACCESS</div><a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a pilot ↗</a></header>
     <section className="client-auth-shell">
       <div className="client-auth-copy"><p>PRIVATE ADTECH WORKSPACE</p><h1>Continue to your control plane.</h1><span>Open your projects, process approved datasets, review decisions, and export reproducible results.</span><div className="client-auth-proof"><span><i /> Isolated workspace</span><span><i /> Encrypted transport</span><span><i /> Metered access</span></div></div>
       <form className="client-auth-card" onSubmit={submit}>

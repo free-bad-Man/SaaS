@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useMemo, useState } from "react";
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import {
   SAMPLE_RECORDS,
   analyzeRecords,
@@ -77,7 +78,7 @@ export default function AuditLab() {
       <header className="lab-nav-wrap">
         <nav className="lab-shell lab-nav" aria-label="Lab navigation">
           <Link className="brand" href="/" aria-label="IVT Guard — home">
-            <span className="brand-mark" aria-hidden="true"><i /><i /></span>
+            <VerdictMark />
             <span>IVT Guard</span>
           </Link>
           <span className="lab-nav-title">Traffic audit lab</span>

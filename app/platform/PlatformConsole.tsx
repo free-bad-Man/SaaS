@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_PLACEMENTS, analyzePlacements, money, summarizePlatform } from "@/lib/platform-engine.mjs";
 import { createPipelineReportCsv, parsePlatformInput } from "@/platform/input.mjs";
@@ -392,7 +393,7 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
     <Root className={`platform-page${embedded ? " platform-embed" : ""}`} aria-label={embedded ? "Interactive Verdict platform dashboard" : undefined}>
       {!embedded ? <header className="platform-topbar">
         <div className="platform-shell platform-nav">
-          <Link className="platform-brand" href="/" aria-label="Verdict home"><span>V</span><b>Verdict</b></Link>
+          <Link className="platform-brand" href="/" aria-label="Verdict home"><VerdictMark /><b>Verdict</b></Link>
           <div className="platform-product"><i /> ADTECH CONTROL PLANE <small>{canUsePaidFeatures ? `${access?.plan.toUpperCase()} WORKSPACE` : "PUBLIC DEMO"}</small></div>
           <div className="platform-nav-actions"><Link href="/lab">IVT Lab</Link>{access?.role === "admin" ? <Link href="/admin">Admin</Link> : null}{access?.role === "anonymous" ? <Link href="/login?returnTo=%2Fplatform">Sign in</Link> : null}{access && (access.role === "member" || access.role === "manager") ? <button type="button" onClick={() => void customerSignOut()}>Sign out</button> : null}<a href="https://adminez.sh/" target="_blank" rel="noreferrer">Request pilot ↗</a></div>
         </div>

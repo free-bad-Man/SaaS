@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Finding = { code: string; title: string; count: number };
@@ -109,7 +110,7 @@ export default function LeadInbox() {
 
   return <main className="admin-page">
     <header className="admin-topbar"><div className="admin-shell admin-nav">
-      <Link className="admin-brand" href="/"><span>V</span><b>Verdict</b></Link>
+      <Link className="admin-brand" href="/"><VerdictMark /><b>Verdict</b></Link>
       <div className="admin-product"><i /> PRIVATE OPERATIONS <small>LEAD INBOX</small></div>
       <div className="admin-nav-actions"><Link href="/admin">Control center</Link><Link href="/platform">Platform</Link><button type="button" onClick={() => void signOut()}>Sign out</button></div>
     </div></header>

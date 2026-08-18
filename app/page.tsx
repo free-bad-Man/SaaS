@@ -1,4 +1,5 @@
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import PlatformConsole from "./platform/PlatformConsole";
 import SampleAuditLead from "./SampleAuditLead";
 
@@ -36,7 +37,7 @@ export default function Home() {
       <header className="nav-wrap">
         <nav className="nav shell" aria-label="Primary navigation">
           <a className="brand" href="#top" aria-label="Verdict — home">
-            <span className="brand-mark" aria-hidden="true"><i /><i /></span>
+            <VerdictMark />
             <span>Verdict</span>
           </a>
           <div className="nav-links">
@@ -208,7 +209,7 @@ export default function Home() {
 
       <section className="faq shell"><div><p className="section-label">FAQ</p><h2>Before<br />we connect</h2></div><div className="faq-list"><details open><summary>How can I verify the result?</summary><p>Every flagged row includes a score, reason code, and evidence value. The public browser lab exposes the same deterministic checks, and the paid scope defines the expected input and output artifacts before work begins.</p></details><details><summary>Does Verdict replace the DSP?</summary><p>No. It is an independent control layer above traffic, conversion, and buying systems. Existing platforms keep delivering media while Verdict normalizes data and coordinates decisions.</p></details><details><summary>Can the platform start without write access?</summary><p>Yes. The first rollout uses read-only data and shadow-mode decisions. API actions are enabled only after the rules and attribution logic have been validated.</p></details><details><summary>Can every module be purchased separately?</summary><p>Yes. Every module has a standalone scope, deliverable, and acceptance criteria. A completed module can later become part of the unified Verdict platform without rebuilding it from scratch.</p></details></div></section>
 
-      <footer><div className="shell footer-inner"><div><a className="brand footer-brand" href="#top"><span className="brand-mark"><i /><i /></span><span>Verdict</span></a><p>Unified AdTech control plane.</p></div><div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">adminez.sh ↗</a></div><span className="footer-note">Verdict AdTech Platform · 2026</span></div></footer>
+      <footer><div className="shell footer-inner"><div><a className="brand footer-brand" href="#top"><VerdictMark /><span>Verdict</span></a><p>Unified AdTech control plane.</p></div><div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">adminez.sh ↗</a></div><span className="footer-note">Verdict AdTech Platform · 2026</span></div></footer>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import { useEffect, useMemo, useState } from "react";
 import { createPipelineReportCsv } from "@/platform/input.mjs";
 
@@ -73,7 +74,7 @@ export default function RunDetail({ runId }: { runId: string }) {
   if (state === "error" || !run) return <main className="platform-page run-detail-page"><div className="run-detail-state run-detail-error"><b>Run unavailable</b><span>The record may belong to an expired local preview session.</span><Link href="/platform">Back to platform →</Link></div></main>;
 
   return <main className="platform-page run-detail-page">
-    <header className="run-detail-nav"><div className="platform-shell"><Link className="platform-brand" href="/"><span>V</span><b>Verdict</b></Link><Link href="/platform">← Platform console</Link></div></header>
+    <header className="run-detail-nav"><div className="platform-shell"><Link className="platform-brand" href="/"><VerdictMark /><b>Verdict</b></Link><Link href="/platform">← Platform console</Link></div></header>
     <div className="platform-shell run-detail-shell">
       <section className="run-detail-heading">
         <div><p>PIPELINE RUN · {run.status.toUpperCase()}</p><h1>{run.sourceName}</h1><span>{new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "long", timeStyle: "short" })} · {run.connector.toUpperCase()} · {run.id}</span></div>

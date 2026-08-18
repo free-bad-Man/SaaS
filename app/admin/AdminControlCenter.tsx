@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type AdminAccount = {
@@ -192,7 +193,7 @@ export default function AdminControlCenter() {
   const metrics = overview?.metrics;
   return <main className="admin-page control-page">
     <header className="admin-topbar"><div className="admin-shell admin-nav">
-      <Link className="admin-brand" href="/"><span>V</span><b>Verdict</b></Link>
+      <Link className="admin-brand" href="/"><VerdictMark /><b>Verdict</b></Link>
       <div className="admin-product"><i /> PRIVATE OPERATIONS <small>CONTROL CENTER</small></div>
       <div className="admin-nav-actions"><Link className="active" href="/admin">Overview</Link><Link href="/admin/leads">Leads</Link><Link href="/platform">Platform</Link><button type="button" onClick={() => void signOut()}>Sign out</button></div>
     </div></header>

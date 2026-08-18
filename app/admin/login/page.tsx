@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import VerdictMark from "@/app/components/VerdictMark";
 import LoginForm from "./LoginForm";
 import "../leads/admin.css";
 
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default function AdminLoginPage() {
   return <main className="admin-page admin-login-page">
     <header className="admin-topbar"><div className="admin-shell admin-nav">
-      <Link className="admin-brand" href="/"><span>V</span><b>Verdict</b></Link>
+      <Link className="admin-brand" href="/"><VerdictMark /><b>Verdict</b></Link>
       <div className="admin-product"><i /> SECURE ACCESS <small>OWNER ONLY</small></div>
       <div className="admin-nav-actions"><Link href="/platform">Platform</Link></div>
     </div></header>
@@ -25,4 +26,3 @@ export default function AdminLoginPage() {
     </section>
   </main>;
 }
-

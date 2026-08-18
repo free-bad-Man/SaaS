@@ -24,7 +24,7 @@ body { font-family: var(--font-serif); }
 .nav-wrap { border-color: rgba(255,255,255,.075); background: rgba(13,13,10,.9); }
 .nav { min-height: 80px; }
 .brand { font-size: 16px; letter-spacing: -.025em; }
-.brand-mark { color: #fff; background: #242421; border: 1px solid #363632; border-radius: 6px; }
+.verdict-mark { filter: drop-shadow(0 0 10px rgba(145,140,255,.2)); }
 .nav-links { gap: 31px; color: #c0c0bb; font-size: 12px; }.nav-links a:hover { color: #fff; }
 .nav-cta { padding: 10px 18px; color: #11110f; background: #f3f3ef; border-radius: 999px; }.nav-cta:hover { background: #dcdcd7; }
 
