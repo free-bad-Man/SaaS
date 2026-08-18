@@ -40,12 +40,12 @@ export default function Home() {
             <span>3VE.4</span>
           </a>
           <div className="nav-links">
-            <Link href="/platform">Platform demo</Link>
-            <a href="#traffic-audit">Audit</a>
-            <a href="#modules">Modules</a>
-            <a href="#offer">Pilot</a>
+            <Link href="/platform">Product</Link>
+            <a href="#verification">Verification</a>
+            <a href="#methodology">Methodology</a>
+            <a href="#traffic-audit">Pricing</a>
           </div>
-          <a className="nav-cta" href="#sample-audit">Free sample audit <span aria-hidden="true">↓</span></a>
+          <a className="nav-cta" href="#sample-audit">Analyze a sample <span aria-hidden="true">↓</span></a>
         </nav>
       </header>
 
@@ -54,9 +54,9 @@ export default function Home() {
         <div className="hero-copy">
           <p className="eyebrow"><span className="eyebrow-dot" /> ADTECH CONTROL PLANE</p>
           <h1>See why traffic was rejected.<br />And what it cost you.</h1>
-          <p className="lead">3VE.4 combines explainable traffic-quality evidence with CPA and ROAS, turning advertising logs into reproducible watch, pause, and scale decisions.</p>
+          <p className="lead">3VE.4 turns advertising logs into reproducible traffic-quality, CPA, and ROAS decisions — with the reason and evidence attached to every flagged row.</p>
           <div className="hero-actions">
-            <a className="button button-primary" href="#sample-audit">Run free sample audit <span aria-hidden="true">→</span></a>
+            <a className="button button-primary" href="#sample-audit">Analyze a small sample <span aria-hidden="true">→</span></a>
             <Link className="button button-secondary" href="/platform">Open platform console ↗</Link>
           </div>
           <div className="hero-notes" aria-label="Platform benefits"><span><i /> OpenRTB + postbacks</span><span><i /> Explainable decisions</span><span><i /> Cloud workspace</span></div>
@@ -91,33 +91,75 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="principles" aria-label="Platform principles"><div className="shell principles-inner"><p>One event stream.<br /><strong>Every decision connected.</strong></p><div><span>Traffic ingestion</span><span>Postback attribution</span><span>IVT quality scoring</span><span>DSP buying actions</span></div></div></section>
+      <section className="principles" aria-label="Platform assurance"><div className="shell principles-inner"><p>Working software.<br /><strong>Evidence before trust.</strong></p><div><span>Local browser lab</span><span>Deterministic rules</span><span>Evidence CSV export</span><span>No production access required</span></div></div></section>
 
       <SampleAuditLead />
 
+      <section className="verification-section shell" id="verification" aria-labelledby="verification-title">
+        <div className="verification-heading">
+          <div><p className="section-label">Verify before you buy</p><h2 id="verification-title">You do not have to<br />trust a black box.</h2></div>
+          <p>Use the exact synthetic fixture, run it entirely in your browser, and export the row-level result. The input, rules, scores, and evidence are available before any commercial engagement.</p>
+        </div>
+
+        <div className="verification-rail" aria-label="Reproducible verification workflow">
+          <article><span>01</span><div><small>INPUT</small><h3>Download the fixture</h3><p>Six synthetic OpenRTB-style records with safe, inspectable fields.</p></div><a href="/samples/synthetic-openrtb-sample.json" download>JSON ↓</a></article>
+          <article><span>02</span><div><small>PROCESS</small><h3>Run it locally</h3><p>The browser lab applies the same seven transparent checks without uploading the file.</p></div><Link href="/lab">Open lab ↗</Link></article>
+          <article><span>03</span><div><small>OUTPUT</small><h3>Compare the evidence</h3><p>Review every score, decision, reason code, and evidence value in a ready export.</p></div><a href="/samples/synthetic-ivt-evidence.csv" download>CSV ↓</a></article>
+        </div>
+
+        <div className="trust-grid" id="methodology">
+          <article className="trust-card methodology-card">
+            <div className="trust-card-head"><span>METHOD / 01</span><i>REPRODUCIBLE</i></div>
+            <h3>Rules that can be challenged.</h3>
+            <p>3VE.4 is not presented as a magic fraud detector. The audit normalizes agreed fields, applies named checks, and attaches the exact evidence that affected each score.</p>
+            <ol className="method-list">
+              <li><span>01</span><div><b>Validate and normalize</b><small>Schema, types, domains, identifiers, and required fields.</small></div></li>
+              <li><span>02</span><div><b>Score transparent signals</b><small>Seven deterministic checks with visible weights and thresholds.</small></div></li>
+              <li><span>03</span><div><b>Review economic impact</b><small>At-risk spend is estimated only when usable cost data is present.</small></div></li>
+              <li><span>04</span><div><b>Deliver evidence</b><small>Row-level CSV, prioritized findings, and an executive report.</small></div></li>
+            </ol>
+            <div className="threshold-code"><code>WATCH ≥ 30</code><code>BLOCK ≥ 60</code><span>Demo defaults · client policy is agreed before delivery</span></div>
+          </article>
+
+          <article className="trust-card security-card">
+            <div className="trust-card-head"><span>DATA / 02</span><i>MINIMUM ACCESS</i></div>
+            <h3>Smallest possible data boundary.</h3>
+            <p>The first decision is what we do not need. A field list or anonymized rows are enough for feasibility; the audit does not require DSP credentials or production write access.</p>
+            <ul className="security-list">
+              <li><i>✓</i><div><b>Browser lab stays local</b><small>Your file never leaves the device.</small></div></li>
+              <li><i>✓</i><div><b>Free server sample is discarded</b><small>Only contact, filename, fingerprint, and aggregate result are retained.</small></div></li>
+              <li><i>✓</i><div><b>Workspace uploads are removed</b><small>Raw files are deleted after processing; exceptions require written agreement.</small></div></li>
+              <li><i>✓</i><div><b>Shadow mode by default</b><small>No automatic blocking or buying action during validation.</small></div></li>
+            </ul>
+            <p className="security-note">Transfer method, retention, fields, deliverables, and acceptance criteria are fixed in writing before paid work begins.</p>
+          </article>
+        </div>
+      </section>
+
       <section className="paid-audit-section shell" id="traffic-audit" aria-labelledby="traffic-audit-title">
         <div className="paid-audit-heading">
-          <div><p className="section-label">First paid engagement</p><h2 id="traffic-audit-title">Find the leak<br />before integrating.</h2></div>
-          <p>Start with a fixed-scope analysis of one real traffic source. No production write access, no automatic blocking, and no long platform commitment.</p>
+          <div><p className="section-label">Low-risk commercial path</p><h2 id="traffic-audit-title">Start small.<br />Expand on evidence.</h2></div>
+          <p>First confirm the schema in writing. Then use a fixed-price micro-pilot before committing to a complete audit or platform integration.</p>
         </div>
-        <div className="paid-audit-card">
-          <div className="paid-audit-main">
-            <div className="paid-audit-kicker"><span>TRAFFIC WASTE AUDIT</span><i>3-5 BUSINESS DAYS</i></div>
-            <h3>Decision-ready evidence from 7-30 days of traffic.</h3>
-            <p>We validate the supplied log, score configured traffic-quality signals, estimate at-risk media spend when cost data is present, and return a prioritized source action plan.</p>
-            <div className="paid-audit-deliverables">
-              <span>Risk distribution</span><span>Source findings</span><span>At-risk spend</span><span>Evidence CSV</span><span>Executive PDF</span><span>Written handoff</span>
-            </div>
-          </div>
-          <aside className="paid-audit-price">
-            <span>Reference engagements</span>
-            <strong>from $750</strong>
-            <p>One source · one agreed schema · up to 10M rows</p>
-            <a className="button button-light" href="/reports/3ve4-sample-traffic-waste-audit.pdf" target="_blank" rel="noreferrer">View sample report ↗</a>
-            <a className="paid-audit-request" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request fixed scope →</a>
-          </aside>
+        <div className="engagement-ladder">
+          <article className="engagement-card engagement-card-primary">
+            <div className="engagement-card-top"><span>01 · PAID MICRO-PILOT</span><i>48 HOURS</i></div>
+            <h3>A real result on a deliberately small boundary.</h3>
+            <p>One anonymized source, one agreed schema, and up to 200,000 rows. We return the exact artifacts defined before payment.</p>
+            <ul><li>Schema and data-quality review</li><li>Risk distribution and top findings</li><li>Row-level evidence CSV</li><li>Compact written conclusion</li></ul>
+            <div className="engagement-bottom"><div><strong>$250</strong><small>fixed scope · credited toward a full audit</small></div><a className="button button-primary" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request micro-pilot ↗</a></div>
+          </article>
+
+          <article className="engagement-card">
+            <div className="engagement-card-top"><span>02 · TRAFFIC WASTE AUDIT</span><i>3–5 BUSINESS DAYS</i></div>
+            <h3>Decision-ready evidence from 7–30 days of traffic.</h3>
+            <p>We validate the supplied log, score agreed traffic-quality signals, estimate at-risk spend when cost data is present, and return a prioritized action plan.</p>
+            <ul><li>Up to 10M rows</li><li>Source and placement findings</li><li>Evidence CSV + executive PDF</li><li>Written handoff and recommendations</li></ul>
+            <div className="engagement-bottom"><div><strong>from $750</strong><small>one source · one agreed schema</small></div><a className="button button-secondary" href="/reports/3ve4-sample-traffic-waste-audit.pdf" target="_blank" rel="noreferrer">View sample report ↗</a></div>
+          </article>
         </div>
-        <p className="paid-audit-note">The downloadable report uses synthetic data. Client findings are delivered only inside the agreed engagement.</p>
+        <div className="scope-assurance"><span><i>00</i><div><b>Free feasibility check</b><small>Send a field list or five anonymized rows. We confirm fit and scope in writing.</small></div></span><span><i>✓</i><div><b>Defined acceptance</b><small>You pay for agreed artifacts and acceptance criteria — never for a promise of guaranteed savings.</small></div></span></div>
+        <p className="paid-audit-note">The downloadable report uses synthetic data. Real findings remain private to the client engagement.</p>
       </section>
 
       <section className="dashboard-proof shell" aria-labelledby="dashboard-proof-title">
@@ -164,7 +206,7 @@ export default function Home() {
 
       <section className="offer-section shell" id="offer"><div className="offer-card dual-offer-card"><div className="offer-main"><p className="section-label">Standalone service</p><h2>Start with one module</h2><p>Choose the immediate bottleneck: ingestion, postbacks, IVT, attribution, optimization, or a custom connector implementation.</p><strong className="standalone-price">from $1,500</strong><ul><li>Defined module boundary</li><li>One real data source</li><li>Working integration or report</li><li>Acceptance criteria and tests</li><li>Deployment documentation</li><li>Upgrade path to 3VE.4</li></ul><a className="button button-secondary module-offer-button" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a module ↗</a></div><div className="offer-price"><span>Complete platform pilot</span><strong>from $5,000</strong><p>One integrated campaign workspace from event ingestion to an explainable optimization queue.</p><ul className="platform-offer-list"><li>Ingestion + postbacks</li><li>IVT + attribution</li><li>CPA/ROAS workspace</li><li>Optimizer decision queue</li><li>One connector implementation</li><li>Handover and deployment docs</li></ul><a className="button button-light" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request platform pilot ↗</a><small>Typical first rollout · 4–6 weeks</small></div></div></section>
 
-      <section className="faq shell"><div><p className="section-label">FAQ</p><h2>Before<br />we connect</h2></div><div className="faq-list"><details open><summary>Does 3VE.4 replace the DSP?</summary><p>No. It is an independent control layer above traffic, conversion, and buying systems. Existing platforms keep delivering media while 3VE.4 normalizes data and coordinates decisions.</p></details><details><summary>Can the platform start without write access?</summary><p>Yes. The first rollout uses read-only data and shadow-mode decisions. API actions are enabled only after the rules and attribution logic have been validated.</p></details><details><summary>Can every module be purchased separately?</summary><p>Yes. Every module has a standalone scope, deliverable, and acceptance criteria. A completed module can later become part of the unified 3VE.4 platform without rebuilding it from scratch.</p></details></div></section>
+      <section className="faq shell"><div><p className="section-label">FAQ</p><h2>Before<br />we connect</h2></div><div className="faq-list"><details open><summary>How can I verify the result?</summary><p>Every flagged row includes a score, reason code, and evidence value. The public browser lab exposes the same deterministic checks, and the paid scope defines the expected input and output artifacts before work begins.</p></details><details><summary>Does 3VE.4 replace the DSP?</summary><p>No. It is an independent control layer above traffic, conversion, and buying systems. Existing platforms keep delivering media while 3VE.4 normalizes data and coordinates decisions.</p></details><details><summary>Can the platform start without write access?</summary><p>Yes. The first rollout uses read-only data and shadow-mode decisions. API actions are enabled only after the rules and attribution logic have been validated.</p></details><details><summary>Can every module be purchased separately?</summary><p>Yes. Every module has a standalone scope, deliverable, and acceptance criteria. A completed module can later become part of the unified 3VE.4 platform without rebuilding it from scratch.</p></details></div></section>
 
       <footer><div className="shell footer-inner"><div><a className="brand footer-brand" href="#top"><span className="brand-mark"><i /><i /></span><span>3VE.4</span></a><p>Unified AdTech control plane.</p></div><div className="footer-links"><a href="https://github.com/free-bad-Man/SaaS" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://adminez.sh/" target="_blank" rel="noreferrer">adminez.sh ↗</a></div><span className="footer-note">3VE.4 AdTech Platform · 2026</span></div></footer>
     </main>

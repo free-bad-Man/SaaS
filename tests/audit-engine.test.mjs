@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   SAMPLE_RECORDS,
@@ -46,4 +47,13 @@ test("builds a summary and downloadable CSV report", () => {
   assert.match(report, /^id,decision,risk_score,reason_codes,evidence/);
   assert.match(report, /req-31B0CE,BLOCK,82/);
   assert.match(report, /device_os_ua_mismatch/);
+});
+
+test("keeps the public verification fixture and evidence export reproducible", async () => {
+  const fixture = JSON.parse(await readFile(new URL("../public/samples/synthetic-openrtb-sample.json", import.meta.url), "utf8"));
+  const publishedReport = await readFile(new URL("../public/samples/synthetic-ivt-evidence.csv", import.meta.url), "utf8");
+  const generatedReport = createReportCsv(analyzeRecords(fixture));
+
+  assert.deepEqual(fixture, SAMPLE_RECORDS);
+  assert.equal(publishedReport.replaceAll("\r\n", "\n").trim(), generatedReport.replaceAll("\r\n", "\n").trim());
 });

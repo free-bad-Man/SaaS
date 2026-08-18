@@ -1,0 +1,7 @@
+id,decision,risk_score,reason_codes,evidence
+req-8FD2A1,BLOCK,70,domain_mismatch | invalid_supply_chain | abnormal_velocity,"Domain mismatch: news-example.ru ≠ premium-publisher.example | Incomplete supply chain: 1 node(s), seller: missing | Abnormal request velocity: 248 req/min"
+req-9CA711,ALLOW,0,,
+req-31B0CE,BLOCK,82,non_residential_network | device_os_ua_mismatch | abnormal_velocity | high_duplicate_rate | geo_mismatch,Datacenter / proxy network: datacenter | OS and User-Agent mismatch: windows ≠ android | Abnormal request velocity: 162 req/min | High duplicate rate: 22% | Country mismatch: NL ≠ RU
+req-A21F77,WATCH,30,abnormal_velocity | high_duplicate_rate,Abnormal request velocity: 135 req/min | High duplicate rate: 19%
+req-DCA992,BLOCK,67,invalid_supply_chain | non_residential_network | abnormal_velocity | geo_mismatch,"Incomplete supply chain: 0 node(s), seller: missing | Datacenter / proxy network: hosting | Abnormal request velocity: 187 req/min | Country mismatch: DE ≠ RU"
+req-EF8401,ALLOW,0,,

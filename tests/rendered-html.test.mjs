@@ -24,6 +24,14 @@ test("server-renders the complete 3VE.4 platform landing", async () => {
   assert.match(html, /See why traffic was rejected/);
   assert.match(html, /Run free sample audit/);
   assert.match(html, /Upload a small sample/);
+  assert.match(html, /You do not have to/);
+  assert.match(html, /Rules that can be challenged/);
+  assert.match(html, /Smallest possible data boundary/);
+  assert.match(html, /PAID MICRO-PILOT/);
+  assert.match(html, /\$250/);
+  assert.match(html, /Defined acceptance/);
+  assert.match(html, /synthetic-openrtb-sample\.json/);
+  assert.match(html, /synthetic-ivt-evidence\.csv/);
   assert.match(html, /Work email/);
   assert.match(html, /no raw-file storage/);
   assert.match(html, /Traffic Ingestion/);
