@@ -53,7 +53,7 @@ test("server-renders the complete Verdict platform landing", async () => {
   assert.match(html, /https:\/\/github\.com\/free-bad-Man\/SaaS/);
   assert.match(html, /href="\/platform"/);
   assert.match(html, /href="\/lab"/);
-  assert.match(html, /https:\/\/verdict\.example\/og\.png/);
+  assert.match(html, /https:\/\/verdict\.example\/verdict-og\.png/);
   assert.doesNotMatch(html, /3VE\.4|3VE4|3ve4|\b3V\b/);
   assert.doesNotMatch(html, /Your site is taking shape|react-loading-skeleton|codex-preview/i);
 });
