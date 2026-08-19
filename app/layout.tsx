@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 import "./cursor-theme.css";
 import "./platform/platform.css";
+import "./ambient-background.css";
 
 const title = "Verdict — unified AdTech control plane";
 const description = "Traffic ingestion, postbacks, IVT control, attribution, CPA/ROAS analytics, spend optimization, and DSP connectors in one explainable AdTech platform.";

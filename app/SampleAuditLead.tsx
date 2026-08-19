@@ -81,7 +81,7 @@ export default function SampleAuditLead() {
 
     <div className="sample-audit-card">
       {!report ? <form onSubmit={submit} className="sample-audit-form">
-        <div className="sample-form-head"><span>01</span><div><b>Run limited audit</b><small>256 KB · 1,000 rows · no raw-file storage</small></div></div>
+        <div className="sample-form-head"><div><b>Run limited audit</b><small>256 KB · 1,000 rows · no raw-file storage</small></div></div>
         <div className="sample-fields">
           <label><span>Work email</span><input type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" /></label>
           <label><span>Company / team <small>optional</small></span><input type="text" maxLength={80} autoComplete="organization" value={company} onChange={(event) => setCompany(event.target.value)} placeholder="Media team" /></label>

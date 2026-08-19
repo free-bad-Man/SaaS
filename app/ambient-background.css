@@ -1,0 +1,151 @@
+:root {
+  --ambient-glass: rgba(8, 8, 17, .62);
+  --ambient-glass-strong: rgba(7, 7, 15, .72);
+  --ambient-glass-soft: rgba(10, 10, 21, .42);
+  --ambient-line: rgba(151, 137, 255, .25);
+  --ambient-blur: blur(18px) saturate(125%);
+}
+
+html { background: #030309; }
+
+body {
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  z-index: -2;
+  inset: 0;
+  pointer-events: none;
+  background: #030309 url("/verdict-background.webp") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 38%, transparent 0 28%, rgba(2, 2, 8, .16) 72%),
+    linear-gradient(180deg, rgba(3, 3, 10, .24), rgba(3, 3, 10, .48));
+}
+
+main,
+.platform-page,
+.admin-page,
+.client-auth-page {
+  background: transparent !important;
+}
+
+.nav-wrap,
+.platform-topbar,
+.admin-topbar,
+.lab-nav-wrap {
+  background: rgba(5, 5, 13, .55) !important;
+  border-color: rgba(151, 137, 255, .18) !important;
+  backdrop-filter: blur(22px) saturate(135%);
+}
+
+.product-frame,
+.sample-audit-card,
+.verification-rail,
+.audit-board,
+.deliverable-grid article,
+.module-grid article,
+.module-action,
+.offer-card,
+.faq details,
+.trust-card,
+.engagement-card,
+.scope-assurance,
+.module-rail,
+.workspace-bar,
+.data-input-bar,
+.upload-job-card,
+.api-run-status,
+.run-history-card,
+.platform-metrics,
+.pipeline-card,
+.placement-card,
+.tab-intro > div:last-child,
+.connector-grid article,
+.run-detail-metrics,
+.run-policy-strip,
+.run-detail-card,
+.policy-editor-card,
+.platform-paywall,
+.public-demo-source,
+.admin-metrics,
+.lead-workspace,
+.admin-login-card,
+.client-auth-card,
+.security-summary > div,
+.lab-workspace,
+.privacy-note,
+.rule-grid {
+  background: var(--ambient-glass) !important;
+  border-color: var(--ambient-line) !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .24), 0 0 58px rgba(104, 83, 255, .08) !important;
+  backdrop-filter: var(--ambient-blur);
+}
+
+.frame-toolbar,
+.product-layout,
+.product-sidebar,
+.risk-panel,
+.reason-panel,
+.product-footer,
+.sample-audit-form,
+.offer-price,
+.pipeline-flow article,
+.scope-assurance > span,
+.file-drop {
+  background: var(--ambient-glass-soft) !important;
+  border-color: rgba(151, 137, 255, .18) !important;
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+.principles,
+.process-section,
+footer,
+.lab-cta {
+  background: rgba(4, 4, 11, .34) !important;
+  border-color: rgba(151, 137, 255, .14) !important;
+  backdrop-filter: blur(8px) saturate(115%);
+}
+
+input,
+select,
+textarea,
+.sample-file {
+  color: #f2f2f4 !important;
+  background: rgba(4, 4, 12, .52) !important;
+  border-color: rgba(151, 137, 255, .24) !important;
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+.sample-file:hover,
+.sample-file.has-file {
+  background: rgba(21, 18, 43, .58) !important;
+  border-color: rgba(151, 137, 255, .55) !important;
+}
+
+option { background: #0b0b15; color: #f2f2f4; }
+
+@media (max-width: 720px) {
+  body::before { background-position: 48% center; }
+  :root { --ambient-blur: blur(14px) saturate(120%); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --ambient-glass: rgba(7, 7, 15, .86);
+    --ambient-glass-strong: rgba(7, 7, 15, .9);
+    --ambient-glass-soft: rgba(10, 10, 21, .8);
+  }
+}

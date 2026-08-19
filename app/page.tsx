@@ -10,19 +10,19 @@ const findings = [
 ] as const;
 
 const platformModules = [
-  { number: "01", name: "Traffic Ingestion", status: "LIVE", text: "OpenRTB, event logs, postbacks, CSV, and API events enter one normalized stream.", meta: "OpenRTB · events · API" },
-  { number: "02", name: "Postback Hub", status: "LIVE", text: "Receive, validate, deduplicate, and route conversions across campaigns and partners.", meta: "S2S · dedupe · routing" },
-  { number: "03", name: "IVT Guard", status: "LIVE", text: "Score traffic quality with transparent rules and evidence before any production block.", meta: "IVT · evidence · shadow-mode" },
-  { number: "04", name: "Attribution", status: "BETA", text: "Tie conversions and revenue back to sources, placements, campaigns, and media cost.", meta: "CPA · ROAS · revenue" },
-  { number: "05", name: "Spend Optimizer", status: "ACTIVE", text: "Combine unit economics and IVT risk into explainable scale, watch, and pause decisions.", meta: "rules · alerts · actions" },
-  { number: "06", name: "DSP Connectors", status: "PLANNED", text: "Roadmap adapters for pulling reporting data and returning approved actions through platform-specific APIs.", meta: "DV360 · Google · Taboola roadmap" },
+  { name: "Traffic Ingestion", status: "LIVE", text: "OpenRTB, event logs, postbacks, CSV, and API events enter one normalized stream.", meta: "OpenRTB · events · API" },
+  { name: "Postback Hub", status: "LIVE", text: "Receive, validate, deduplicate, and route conversions across campaigns and partners.", meta: "S2S · dedupe · routing" },
+  { name: "IVT Guard", status: "LIVE", text: "Score traffic quality with transparent rules and evidence before any production block.", meta: "IVT · evidence · shadow-mode" },
+  { name: "Attribution", status: "BETA", text: "Tie conversions and revenue back to sources, placements, campaigns, and media cost.", meta: "CPA · ROAS · revenue" },
+  { name: "Spend Optimizer", status: "ACTIVE", text: "Combine unit economics and IVT risk into explainable scale, watch, and pause decisions.", meta: "rules · alerts · actions" },
+  { name: "DSP Connectors", status: "PLANNED", text: "Roadmap adapters for pulling reporting data and returning approved actions through platform-specific APIs.", meta: "DV360 · Google · Taboola roadmap" },
 ] as const;
 
 const deliverables = [
-  { number: "01", title: "Unified event layer", text: "One normalized data model across impressions, clicks, spend, conversions, and postbacks.", meta: "Ingestion · schema · quality" },
-  { number: "02", title: "Explainable traffic control", text: "Every IVT flag and optimizer decision is tied to a rule, metric, and supporting evidence.", meta: "Rule · evidence · score" },
-  { number: "03", title: "Campaign economics", text: "Source-level CPA, ROAS, revenue, and at-risk spend in a decision-ready workspace.", meta: "CPA · ROAS · attribution" },
-  { number: "04", title: "Buying actions", text: "Reviewable scale, keep, watch, and pause queues for a safe shadow-mode rollout.", meta: "Queue · approval · API" },
+  { title: "Unified event layer", text: "One normalized data model across impressions, clicks, spend, conversions, and postbacks.", meta: "Ingestion · schema · quality" },
+  { title: "Explainable traffic control", text: "Every IVT flag and optimizer decision is tied to a rule, metric, and supporting evidence.", meta: "Rule · evidence · score" },
+  { title: "Campaign economics", text: "Source-level CPA, ROAS, revenue, and at-risk spend in a decision-ready workspace.", meta: "CPA · ROAS · attribution" },
+  { title: "Buying actions", text: "Reviewable scale, keep, watch, and pause queues for a safe shadow-mode rollout.", meta: "Queue · approval · API" },
 ] as const;
 
 const steps = [
@@ -103,27 +103,27 @@ export default function Home() {
         </div>
 
         <div className="verification-rail" aria-label="Reproducible verification workflow">
-          <article><span>01</span><div><small>INPUT</small><h3>Download the fixture</h3><p>Six synthetic OpenRTB-style records with safe, inspectable fields.</p></div><a href="/samples/synthetic-openrtb-sample.json" download>JSON ↓</a></article>
-          <article><span>02</span><div><small>PROCESS</small><h3>Run it locally</h3><p>The browser lab applies the same seven transparent checks without uploading the file.</p></div><Link href="/lab">Open lab ↗</Link></article>
-          <article><span>03</span><div><small>OUTPUT</small><h3>Compare the evidence</h3><p>Review every score, decision, reason code, and evidence value in a ready export.</p></div><a href="/samples/synthetic-ivt-evidence.csv" download>CSV ↓</a></article>
+          <article><div><small>INPUT</small><h3>Download the fixture</h3><p>Six synthetic OpenRTB-style records with safe, inspectable fields.</p></div><a href="/samples/synthetic-openrtb-sample.json" download>JSON ↓</a></article>
+          <article><div><small>PROCESS</small><h3>Run it locally</h3><p>The browser lab applies the same seven transparent checks without uploading the file.</p></div><Link href="/lab">Open lab ↗</Link></article>
+          <article><div><small>OUTPUT</small><h3>Compare the evidence</h3><p>Review every score, decision, reason code, and evidence value in a ready export.</p></div><a href="/samples/synthetic-ivt-evidence.csv" download>CSV ↓</a></article>
         </div>
 
         <div className="trust-grid" id="methodology">
           <article className="trust-card methodology-card">
-            <div className="trust-card-head"><span>METHOD / 01</span><i>REPRODUCIBLE</i></div>
+            <div className="trust-card-head"><span>METHOD</span><i>REPRODUCIBLE</i></div>
             <h3>Rules that can be challenged.</h3>
             <p>Verdict is not presented as a magic fraud detector. The audit normalizes agreed fields, applies named checks, and attaches the exact evidence that affected each score.</p>
             <ol className="method-list">
-              <li><span>01</span><div><b>Validate and normalize</b><small>Schema, types, domains, identifiers, and required fields.</small></div></li>
-              <li><span>02</span><div><b>Score transparent signals</b><small>Seven deterministic checks with visible weights and thresholds.</small></div></li>
-              <li><span>03</span><div><b>Review economic impact</b><small>At-risk spend is estimated only when usable cost data is present.</small></div></li>
-              <li><span>04</span><div><b>Deliver evidence</b><small>Row-level CSV, prioritized findings, and an executive report.</small></div></li>
+              <li><div><b>Validate and normalize</b><small>Schema, types, domains, identifiers, and required fields.</small></div></li>
+              <li><div><b>Score transparent signals</b><small>Seven deterministic checks with visible weights and thresholds.</small></div></li>
+              <li><div><b>Review economic impact</b><small>At-risk spend is estimated only when usable cost data is present.</small></div></li>
+              <li><div><b>Deliver evidence</b><small>Row-level CSV, prioritized findings, and an executive report.</small></div></li>
             </ol>
             <div className="threshold-code"><code>WATCH ≥ 30</code><code>BLOCK ≥ 60</code><span>Demo defaults · client policy is agreed before delivery</span></div>
           </article>
 
           <article className="trust-card security-card">
-            <div className="trust-card-head"><span>DATA / 02</span><i>MINIMUM ACCESS</i></div>
+            <div className="trust-card-head"><span>DATA</span><i>MINIMUM ACCESS</i></div>
             <h3>Smallest possible data boundary.</h3>
             <p>The first decision is what we do not need. A field list or anonymized rows are enough for feasibility; the audit does not require DSP credentials or production write access.</p>
             <ul className="security-list">
@@ -144,7 +144,7 @@ export default function Home() {
         </div>
         <div className="engagement-ladder">
           <article className="engagement-card engagement-card-primary">
-            <div className="engagement-card-top"><span>01 · PAID MICRO-PILOT</span><i>48 HOURS</i></div>
+            <div className="engagement-card-top"><span>PAID MICRO-PILOT</span><i>48 HOURS</i></div>
             <h3>A real result on a deliberately small boundary.</h3>
             <p>One anonymized source, one agreed schema, and up to 200,000 rows. We return the exact artifacts defined before payment.</p>
             <ul><li>Schema and data-quality review</li><li>Risk distribution and top findings</li><li>Row-level evidence CSV</li><li>Compact written conclusion</li></ul>
@@ -152,14 +152,14 @@ export default function Home() {
           </article>
 
           <article className="engagement-card">
-            <div className="engagement-card-top"><span>02 · TRAFFIC WASTE AUDIT</span><i>3–5 BUSINESS DAYS</i></div>
+            <div className="engagement-card-top"><span>TRAFFIC WASTE AUDIT</span><i>3–5 BUSINESS DAYS</i></div>
             <h3>Decision-ready evidence from 7–30 days of traffic.</h3>
             <p>We validate the supplied log, score agreed traffic-quality signals, estimate at-risk spend when cost data is present, and return a prioritized action plan.</p>
             <ul><li>Up to 10M rows</li><li>Source and placement findings</li><li>Evidence CSV + executive PDF</li><li>Written handoff and recommendations</li></ul>
             <div className="engagement-bottom"><div><strong>from $750</strong><small>one source · one agreed schema</small></div><a className="button button-secondary" href="/reports/verdict-sample-traffic-waste-audit.pdf" target="_blank" rel="noreferrer">View sample report ↗</a></div>
           </article>
         </div>
-        <div className="scope-assurance"><span><i>00</i><div><b>Free feasibility check</b><small>Send a field list or five anonymized rows. We confirm fit and scope in writing.</small></div></span><span><i>✓</i><div><b>Defined acceptance</b><small>You pay for agreed artifacts and acceptance criteria — never for a promise of guaranteed savings.</small></div></span></div>
+        <div className="scope-assurance"><span><div><b>Free feasibility check</b><small>Send a field list or five anonymized rows. We confirm fit and scope in writing.</small></div></span><span><div><b>Defined acceptance</b><small>You pay for agreed artifacts and acceptance criteria — never for a promise of guaranteed savings.</small></div></span></div>
         <p className="paid-audit-note">The downloadable report uses synthetic data. Real findings remain private to the client engagement.</p>
       </section>
 
@@ -180,7 +180,7 @@ export default function Home() {
           <p>Five modules already operate as one pipeline. Connector delivery is scoped as a paid integration engagement for the client’s actual buying stack.</p>
         </div>
         <div className="module-grid">
-          {platformModules.map((module) => <article key={module.number}><div className="module-card-top"><span>{module.number}</span><i>{module.status}</i></div><h3>{module.name}</h3><p>{module.text}</p><small>{module.meta}</small><a className="module-service-link" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request this module ↗</a></article>)}
+          {platformModules.map((module) => <article key={module.name}><div className="module-card-top"><i>{module.status}</i></div><h3>{module.name}</h3><p>{module.text}</p><small>{module.meta}</small><a className="module-service-link" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request this module ↗</a></article>)}
         </div>
         <div className="module-action"><div><span>START WITH ONE OR COMBINE ALL SIX</span><b>Follow an event from ingestion to optimization.</b></div><Link className="button button-primary" href="/platform">Explore platform console →</Link></div>
       </section>
@@ -201,9 +201,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="deliverables shell"><div className="section-heading compact"><div><p className="section-label">Platform output</p><h2>From raw events<br />to approved action.</h2></div></div><div className="deliverable-grid">{deliverables.map((item) => <article key={item.number}><div className="deliverable-top"><span>{item.number}</span><small>{item.meta}</small></div><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></section>
+      <section className="deliverables shell"><div className="section-heading compact"><div><p className="section-label">Platform output</p><h2>From raw events<br />to approved action.</h2></div></div><div className="deliverable-grid">{deliverables.map((item) => <article key={item.title}><div className="deliverable-top"><small>{item.meta}</small></div><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></section>
 
-      <section className="process-section" id="process"><div className="shell process-grid"><div className="process-copy"><p className="section-label light">Commercial rollout</p><h2>Connect once.<br />Improve continuously.</h2><p>The first deployment covers a complete campaign loop, not an isolated report: events enter the platform, conversions are attributed, traffic is scored, and decisions reach an approval queue.</p></div><ol className="steps">{steps.map(([title, text], index) => <li key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></div></section>
+      <section className="process-section" id="process"><div className="shell process-grid"><div className="process-copy"><p className="section-label light">Commercial rollout</p><h2>Connect once.<br />Improve continuously.</h2><p>The first deployment covers a complete campaign loop, not an isolated report: events enter the platform, conversions are attributed, traffic is scored, and decisions reach an approval queue.</p></div><ol className="steps">{steps.map(([title, text]) => <li key={title}><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></div></section>
 
       <section className="offer-section shell" id="offer"><div className="offer-card dual-offer-card"><div className="offer-main"><p className="section-label">Standalone service</p><h2>Start with one module</h2><p>Choose the immediate bottleneck: ingestion, postbacks, IVT, attribution, optimization, or a custom connector implementation.</p><strong className="standalone-price">from $1,500</strong><ul><li>Defined module boundary</li><li>One real data source</li><li>Working integration or report</li><li>Acceptance criteria and tests</li><li>Deployment documentation</li><li>Upgrade path to Verdict</li></ul><a className="button button-secondary module-offer-button" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request a module ↗</a></div><div className="offer-price"><span>Complete platform pilot</span><strong>from $5,000</strong><p>One integrated campaign workspace from event ingestion to an explainable optimization queue.</p><ul className="platform-offer-list"><li>Ingestion + postbacks</li><li>IVT + attribution</li><li>CPA/ROAS workspace</li><li>Optimizer decision queue</li><li>One connector implementation</li><li>Handover and deployment docs</li></ul><a className="button button-light" href="https://adminez.sh/" target="_blank" rel="noreferrer">Request platform pilot ↗</a><small>Typical first rollout · 4–6 weeks</small></div></div></section>
 

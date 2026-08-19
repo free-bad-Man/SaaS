@@ -97,7 +97,7 @@ export default function AuditLab() {
 
       <section className="lab-workspace lab-shell" aria-label="Traffic audit workspace">
         <aside className="upload-panel">
-          <div className="upload-heading"><span>01</span><div><b>Data source</b><small>JSON, JSONL, or CSV · up to 2 MB</small></div></div>
+          <div className="upload-heading"><div><b>Data source</b><small>JSON, JSONL, or CSV · up to 2 MB</small></div></div>
           <label className="file-drop">
             <input type="file" accept=".json,.jsonl,.ndjson,.csv,application/json,text/csv" onChange={handleFile} />
             <span className="upload-icon" aria-hidden="true">↑</span>

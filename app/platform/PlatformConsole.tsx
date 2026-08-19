@@ -10,12 +10,12 @@ const tabs = ["Overview", "Attribution", "Optimizer", "Policy", "Connectors"] as
 type Tab = (typeof tabs)[number];
 
 const defaultModules = [
-  ["01", "Traffic Ingestion", "LIVE", "1.34M events"],
-  ["02", "Postback Hub", "LIVE", "787 accepted"],
-  ["03", "IVT Guard", "LIVE", "2 sources paused"],
-  ["04", "Attribution", "BETA", "$6.44K revenue"],
-  ["05", "Spend Optimizer", "ACTIVE", "6 decisions"],
-  ["06", "DSP Connectors", "ROADMAP", "3 adapters planned"],
+  ["Traffic Ingestion", "LIVE", "1.34M events"],
+  ["Postback Hub", "LIVE", "787 accepted"],
+  ["IVT Guard", "LIVE", "2 sources paused"],
+  ["Attribution", "BETA", "$6.44K revenue"],
+  ["Spend Optimizer", "ACTIVE", "6 decisions"],
+  ["DSP Connectors", "ROADMAP", "3 adapters planned"],
 ] as const;
 
 const connectors = [
@@ -124,12 +124,12 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
   }, [pipelineResult, summary]);
   const visibleCurrency = pipelineResult?.summary.currency ?? "USD";
   const moduleRows = useMemo(() => pipelineResult ? [
-    ["01", "Traffic Ingestion", "LIVE", `${pipelineResult.modules.ingestion.accepted} accepted`],
-    ["02", "Postback Hub", "LIVE", `${pipelineResult.modules.postbacks.accepted} accepted`],
-    ["03", "IVT Guard", "LIVE", `${pipelineResult.modules.ivt.riskyPlacements} risky sources`],
-    ["04", "Attribution", "LIVE", `${pipelineResult.modules.attribution.attributed} attributed`],
-    ["05", "Spend Optimizer", "ACTIVE", `${pipelineResult.modules.optimizer.decisions} decisions`],
-    ["06", "Decision Export", "AVAILABLE", `${pipelineResult.modules.connector.id} · ${pipelineResult.modules.connector.mode}`],
+    ["Traffic Ingestion", "LIVE", `${pipelineResult.modules.ingestion.accepted} accepted`],
+    ["Postback Hub", "LIVE", `${pipelineResult.modules.postbacks.accepted} accepted`],
+    ["IVT Guard", "LIVE", `${pipelineResult.modules.ivt.riskyPlacements} risky sources`],
+    ["Attribution", "LIVE", `${pipelineResult.modules.attribution.attributed} attributed`],
+    ["Spend Optimizer", "ACTIVE", `${pipelineResult.modules.optimizer.decisions} decisions`],
+    ["Decision Export", "AVAILABLE", `${pipelineResult.modules.connector.id} · ${pipelineResult.modules.connector.mode}`],
   ] as const : defaultModules, [pipelineResult]);
 
   async function fetchRunHistory(projectId: string) {
@@ -402,9 +402,8 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
       <div className={`platform-shell platform-layout${embedded ? " platform-layout-embedded" : ""}`}>
         <aside className="module-rail" aria-label="Platform modules">
           <p>Platform modules</p>
-          {moduleRows.map(([number, title, status, metric]) => (
-            <article key={number}>
-              <span>{number}</span>
+          {moduleRows.map(([title, status, metric]) => (
+            <article key={title}>
               <div><b>{title}</b><small>{metric}</small></div>
               <i className={status === "BETA" || status === "ROADMAP" ? "status-watch" : ""}>{status}</i>
             </article>
@@ -491,11 +490,11 @@ export default function PlatformConsole({ embedded = false }: { embedded?: boole
               <div className="pipeline-card">
                 <div className="console-card-title"><div><b>Live decision pipeline</b><span>From event to buying action</span></div><small><i /> ALL SERVICES HEALTHY</small></div>
                 <div className="pipeline-flow">
-                  <article><span>01</span><b>Ingest</b><small>{pipelineResult ? `${pipelineResult.modules.ingestion.accepted} events` : "1.34M events"}</small></article><i>→</i>
-                  <article><span>02</span><b>Validate</b><small>{pipelineResult ? `${pipelineResult.modules.ingestion.rejected + pipelineResult.modules.ingestion.duplicates} flagged` : "53 duplicates"}</small></article><i>→</i>
-                  <article><span>03</span><b>Attribute</b><small>{pipelineResult ? `${pipelineResult.modules.attribution.attributed} conversions` : "787 conversions"}</small></article><i>→</i>
-                  <article><span>04</span><b>Score</b><small>{pipelineResult ? `${pipelineResult.modules.ivt.scored} scored` : "IVT + ROAS"}</small></article><i>→</i>
-                  <article><span>05</span><b>Act</b><small>{pipelineResult ? `${pipelineResult.modules.optimizer.actionable} queued` : "6 decisions"}</small></article>
+                  <article><b>Ingest</b><small>{pipelineResult ? `${pipelineResult.modules.ingestion.accepted} events` : "1.34M events"}</small></article><i>→</i>
+                  <article><b>Validate</b><small>{pipelineResult ? `${pipelineResult.modules.ingestion.rejected + pipelineResult.modules.ingestion.duplicates} flagged` : "53 duplicates"}</small></article><i>→</i>
+                  <article><b>Attribute</b><small>{pipelineResult ? `${pipelineResult.modules.attribution.attributed} conversions` : "787 conversions"}</small></article><i>→</i>
+                  <article><b>Score</b><small>{pipelineResult ? `${pipelineResult.modules.ivt.scored} scored` : "IVT + ROAS"}</small></article><i>→</i>
+                  <article><b>Act</b><small>{pipelineResult ? `${pipelineResult.modules.optimizer.actionable} queued` : "6 decisions"}</small></article>
                 </div>
               </div>
             </>
