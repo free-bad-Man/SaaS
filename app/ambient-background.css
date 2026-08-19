@@ -21,7 +21,11 @@ body::before {
   z-index: -2;
   inset: 0;
   pointer-events: none;
-  background: #030309 url("/verdict-background.webp") center center / cover no-repeat;
+  background-color: #030309;
+  background-image: url("/verdict-background.webp");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: min(100vw, 1672px) auto;
 }
 
 body::after {
